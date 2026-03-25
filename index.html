@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>睡眠改善测评系统</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1, h2 { color: #2c3e50; text-align: center; }
+        .question-block { margin-bottom: 25px; }
+        .question-title { font-weight: bold; margin-bottom: 10px; display: block; }
+        label { display: block; margin-bottom: 8px; cursor: pointer; padding: 8px; background: #f9f9f9; border-radius: 4px; transition: background 0.2s; }
+        label:hover { background: #eef2f5; }
+        input[type="radio"], input[type="checkbox"] { margin-right: 10px; }
+        .btn { display: block; width: 100%; padding: 12px; background: #3498db; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; margin-top: 20px; }
+        .btn:hover { background: #2980b9; }
+        .hidden { display: none; }
+        .result-box { padding: 20px; background: #e8f6f3; border-left: 5px solid #1abc9c; border-radius: 4px; margin-top: 20px; }
+        .warning-box { padding: 20px; background: #fdedec; border-left: 5px solid #e74c3c; border-radius: 4px; margin-top: 20px; }
+        .measure-item { margin-bottom: 10px; padding: 10px; background: #fff; border-radius: 4px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>睡眠改善测评</h1>
+    <div id="survey-form">
+        </div>
+    
+    <div id="result-container" class="hidden"></div>
+</div>
+
+<script>
+    // 问卷数据配置
+    const questions = [
+        { id: 'q3', module: 1, type: 'radio', title: 'Q3. 您目前平均每晚睡眠时长是多少？', options: [{val: 'A', text: '不足6小时'}, {val: 'B', text: '6-8小时（不含）'}, {val: 'C', text: '8小时及以上'}] },
+        { id: 'q5', module: 2, type: 'radio', title: 'Q5. 您平均每周加班情况是？', options: [{val: 'A', text: '几乎不加班'}, {val: 'B', text: '偶尔加班'}, {val: 'C', text: '经常加班'}, {val: 'D', text: '长期高强度加班'}] },
+        { id: 'q6', module: 2, type: 'checkbox', title: 'Q6. 您是否有以下影响睡眠的健康问题？（可多选）', options: [{val: 'A', text: '慢性疼痛'}, {val: 'B', text: '呼吸问题'}, {val: 'C', text: '心理问题'}, {val: 'D', text: '服用影响睡眠药物'}, {val: 'E', text: '以上都没有'}] },
+        { id: 'q8', module: 2, type: 'radio', title: 'Q8. 您的睡前1小时通常做什么？', options: [{val: 'A', text: '看手机/追剧/打游戏'}, {val: 'B', text: '看纸质书/听音乐'}, {val: 'C', text: '做放松活动'}, {val: 'D', text: '工作或处理事务'}] },
+        { id: 'q9', module: 2, type: 'radio', title: 'Q9. 您的卧室夜间温度通常是多少？', options: [{val: 'A', text: '18-22℃'}, {val: 'B', text: '23-26℃'}, {val: 'C', text: '18℃以下或27℃以上'}, {val: 'D', text: '不确定/没关注过'}] },
+        { id: 'q10', module: 3, type: 'radio', title: 'Q10. 您的起床时间是否固定？', options: [{val: 'A', text: '每天固定'}, {val: 'B', text: '工作日固定，周末晚起'}, {val: 'C', text: '不规律'}] },
+        { id: 'q11', module: 3, type: 'radio', title: 'Q11. 起床多久后接触自然光照？', options: [{val: 'A', text: '30分钟内'}, {val: 'B', text: '30-90分钟'}, {val: 'C', text: '超过90分钟/几乎不'}] },
+        { id: 'q12', module: 3, type: 'radio', title: 'Q12. 起床后多久喝第一杯含咖啡因饮品？', options: [{val: 'A', text: '30分钟内'}, {val: 'B', text: '30-90分钟'}, {val: 'C', text: '超过90分钟/不喝'}] },
+        { id: 'q13', module: 3, type: 'radio', title: 'Q13. 通常在什么时间进行剧烈运动？', options: [{val: 'A', text: '早晨 6-9 点'}, {val: 'B', text: '下午 4-7 点'}, {val: 'C', text: '睡前 3 小时内'}, {val: 'D', text: '其他时间'}, {val: 'E', text: '几乎不运动'}] },
+        { id: 'q14', module: 3, type: 'radio', title: 'Q14. 每天最后喝含咖啡因饮品的时间是？', options: [{val: 'A', text: '下午2点前'}, {val: 'B', text: '下午2-6点'}, {val: 'C', text: '下午6点后'}, {val: 'D', text: '不喝'}] },
+        { id: 'q15', module: 3, type: 'radio', title: 'Q15. 每周有几天在傍晚接触自然光？', options: [{val: 'A', text: '5-7天'}, {val: 'B', text: '3-4天'}, {val: 'C', text: '1-2天/几乎没有'}] },
+        { id: 'q16', module: 3, type: 'radio', title: 'Q16. 有午睡习惯吗？', options: [{val: 'A', text: '有固定习惯'}, {val: 'B', text: '偶尔'}, {val: 'C', text: '几乎不'}] },
+        { id: 'q17', module: 3, type: 'radio', title: 'Q17. 通常午睡时长是多久？', options: [{val: 'A', text: '20分钟内'}, {val: 'B', text: '20-60分钟'}, {val: 'C', text: '超过60分钟'}, {val: 'D', text: '不确定'}, {val: 'E', text: '几乎不午睡'}] },
+        { id: 'q18', module: 3, type: 'checkbox', title: 'Q18. 躺下30分钟未入睡，会怎么做？（可多选）', options: [{val: 'A', text: '继续躺着'}, {val: 'B', text: '起床做其他事'}, {val: 'C', text: '在床上看书/玩手机'}] }
+    ];
+
+    const measuresDict = {
+        M1: "措施 1：建议起床后 30-60 分钟内接触室外自然光照。",
+        M2: "措施 2：建议将早晨第一杯咖啡因饮品推迟到起床 90-120 分钟后。",
+        M3: "措施 3：建议睡前 8-10 小时内避免摄入咖啡因。",
+        M4: "措施 4：建议在下午日落前增加自然光接触，帮助调节生物钟。",
+        M5: "措施 5：睡前避免强光照射。",
+        M6: "措施 6：建议调整卧室夜间温度至 18-22℃。",
+        M7_1: "措施 7：避免在睡前 3 小时内进行剧烈运动。",
+        M7_2: "措施 7：建议将剧烈运动时间调整至早晨 6-9 点或下午 4-7 点。",
+        M8: "措施 8：建议将午睡时间严格控制在 20 分钟以内。",
+        M9: "措施 9：建议每天保持固定的起床时间（包括周末）。",
+        M10: "措施 10：建议睡前 1 小时远离电子屏幕。",
+        M11: "措施 11（进阶选项）：可考虑睡眠补充剂组合——镁（200mg）+ 茶氨酸（200mg）。",
+        M12: "措施 12：若躺下 20-25 分钟仍未入睡，建议离开卧室进行放松活动，产生困意后再回床。"
+    };
+
+    // 渲染问卷表单
+    const formContainer = document.getElementById('survey-form');
+    let htmlContent = '';
+    questions.forEach(q => {
+        htmlContent += `<div class="question-block" id="block-${q.id}">`;
+        htmlContent += `<span class="question-title">${q.title}</span>`;
+        q.options.forEach(opt => {
+            const inputType = q.type;
+            const name = q.id + (inputType === 'checkbox' ? '[]' : '');
+            htmlContent += `<label><input type="${inputType}" name="${name}" value="${opt.val}"> ${opt.text}</label>`;
+        });
+        htmlContent += `</div>`;
+    });
+    htmlContent += `<button class="btn" onclick="submitSurvey()">提交测评获取方案</button>`;
+    formContainer.innerHTML = htmlContent;
+
+    function getValues(name, type) {
+        if (type === 'radio') {
+            const el = document.querySelector(`input[name="${name}"]:checked`);
+            return el ? el.value : null;
+        } else {
+            const els = document.querySelectorAll(`input[name="${name}[]"]:checked`);
+            return Array.from(els).map(el => el.value);
+        }
+    }
+
+    function submitSurvey() {
+        // 获取用户答案
+        const answers = {};
+        let allAnswered = true;
+        questions.forEach(q => {
+            answers[q.id] = getValues(q.id, q.type);
+            if (!answers[q.id] || (Array.isArray(answers[q.id]) && answers[q.id].length === 0)) {
+                allAnswered = false;
+            }
+        });
+
+        if (!allAnswered) {
+            alert("请回答所有问题后再提交测评。");
+            return;
+        }
+
+        const resultContainer = document.getElementById('result-container');
+        formContainer.classList.add('hidden');
+        resultContainer.classList.remove('hidden');
+
+        // ==== 筛选逻辑 (拦截器) ====
+        if (answers.q3 === 'A') {
+            showWarning("由于您当前睡眠不足6小时，建议您优先寻求专业医疗机构的帮助进行排查，暂不适合单纯通过自助习惯干预。");
+            return;
+        }
+        if (answers.q5 === 'D') {
+            showWarning("由于您处于长期高强度加班状态，核心问题在于工作强度与客观环境。建议优先调整现实作息环境。");
+            return;
+        }
+        if (answers.q6.some(val => ['A', 'B', 'C', 'D'].includes(val))) {
+            showWarning("系统检测到您存在可能影响睡眠的健康问题或用药情况。请优先解决或遵医嘱处理健康问题。");
+            return;
+        }
+
+        // ==== 方案推送映射逻辑 ====
+        let solutions = [];
+
+        if (answers.q10 === 'B' || answers.q10 === 'C') solutions.push(measuresDict.M9);
+        if (answers.q11 === 'B' || answers.q11 === 'C') solutions.push(measuresDict.M1);
+        if (answers.q12 === 'A' || answers.q12 === 'B') solutions.push(measuresDict.M2);
+        if (answers.q13 === 'C') solutions.push(measuresDict.M7_1);
+        if (answers.q13 === 'D') solutions.push(measuresDict.M7_2);
+        if (answers.q14 === 'B' || answers.q14 === 'C') solutions.push(measuresDict.M3);
+        if (answers.q15 === 'B' || answers.q15 === 'C') solutions.push(measuresDict.M4);
+        
+        const validQ16 = answers.q16 === 'A' || answers.q16 === 'B';
+        const validQ17 = ['B', 'C', 'D'].includes(answers.q17);
+        if (validQ16 && validQ17) solutions.push(measuresDict.M8);
+
+        if (answers.q8 === 'A') solutions.push(measuresDict.M10);
+        if (answers.q8 === 'D') {
+            solutions.push(measuresDict.M5);
+            solutions.push(measuresDict.M10);
+        }
+        
+        if (['B', 'C', 'D'].includes(answers.q9)) solutions.push(measuresDict.M6);
+        if (answers.q18.includes('A') || answers.q18.includes('C')) solutions.push(measuresDict.M12);
+
+        // 基础建议达标后补充项
+        solutions.push(measuresDict.M11);
+
+        // 渲染结果
+        renderSolutions(solutions);
+    }
+
+    function showWarning(msg) {
+        document.getElementById('result-container').innerHTML = `
+            <h2>⚠️ 测评中止建议</h2>
+            <div class="warning-box">${msg}</div>
+            <button class="btn" onclick="location.reload()" style="margin-top:20px;">重新测评</button>
+        `;
+    }
+
+    function renderSolutions(solutions) {
+        // 去重（针对多条件触发同一措施的情况）
+        const uniqueSolutions = [...new Set(solutions)];
+        let html = `<h2>🎯 您的专属睡眠改善方案</h2><div class="result-box">`;
+        
+        if(uniqueSolutions.length === 1 && uniqueSolutions[0] === measuresDict.M11) {
+             html += `<div class="measure-item">您的睡眠习惯已经非常良好，无需额外调整基础习惯。</div>`;
+        }
+        
+        uniqueSolutions.forEach(sol => {
+            html += `<div class="measure-item">${sol}</div>`;
+        });
+        html += `</div><button class="btn" onclick="location.reload()">重新测评</button>`;
+        document.getElementById('result-container').innerHTML = html;
+    }
+</script>
+</body>
+</html>
