@@ -24,7 +24,6 @@
         .logo-box { margin-bottom: 30px; }
         .logo-svg { width: 60px; height: 60px; }
 
-        /* 进度条 */
         .progress-bar {
             position: absolute; top: 0; left: 0; width: 0%; height: 4px;
             background: linear-gradient(to right, var(--g-blue), var(--g-red), var(--g-yellow), var(--g-green));
@@ -55,12 +54,18 @@
 
         .back-btn { position: absolute; top: -20px; left: 0; background: none; border: none; color: var(--g-sub); cursor: pointer; font-size: 14px; }
 
-        /* 提示卡片：温馨、人性化 */
         .warm-notice { 
             background: #FDF7E7; border-radius: 16px; padding: 25px; margin-bottom: 35px; 
             text-align: left; line-height: 1.8; font-size: 15px; 
             border: 1px solid #F9EBC8; color: #5F4B32;
         }
+
+        /* 扉页布局回归 */
+        .summary-container { border-left: 1px solid #EBEBEB; padding: 40px 60px; text-align: left; margin: 40px auto 0; max-width: 600px; }
+        .summary-header { font-family: 'Noto Serif SC', serif; font-size: 32px; color: var(--g-gray); margin-bottom: 60px; }
+        .summary-list { list-style: none; padding: 0; }
+        .summary-list li { font-size: 18px; margin-bottom: 30px; letter-spacing: 1px; color: #3C4043; border-bottom: 1px solid #F1F3F4; padding-bottom: 15px; }
+        .summary-footer { margin-top: 80px; font-size: 12px; color: #AAA; letter-spacing: 3px; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -79,9 +84,9 @@
         </div>
 
         <div id="page-home" class="page active">
-            <h1 style="font-size: 42px; font-weight: 500; letter-spacing: 2px;">DEEP SLEEP LAB</h1>
-            <p style="color: var(--g-sub); font-size: 18px; letter-spacing: 4px;">找回失去的睡眠</p>
-            <div style="font-size: 14px; color: #9aa0a6; letter-spacing: 2px; margin: 40px 0;">无需药物 ｜ 无痛干预 ｜ 21天重塑睡眠</div>
+            <h1 style="font-size: 42px; font-weight: 500; letter-spacing: 2px; margin-bottom: 10px;">DEEP SLEEP LAB</h1>
+            <p style="color: var(--g-sub); font-size: 18px; letter-spacing: 4px; margin-bottom: 40px;">找回失去的睡眠</p>
+            <div style="font-size: 14px; color: #9aa0a6; letter-spacing: 2px; margin-bottom: 50px;">无需药物 ｜ 无痛干预 ｜ 21天重塑睡眠</div>
             <button class="btn-main" onclick="nextPage('q1')" style="padding: 12px 40px; font-size: 16px;">开始免费测评</button>
         </div>
 
@@ -169,10 +174,7 @@
     function checkRedirect(qid) {
         if (qid === 'q6') {
             const hasIssues = userAnswers.q6 && userAnswers.q6.some(v => v !== 'E');
-            if (hasIssues) {
-                showWarmAdvice();
-                return;
-            }
+            if (hasIssues) { showWarmAdvice(); return; }
         }
         const idx = qData.findIndex(q => q.id === qid);
         nextPage(qData[idx+1] ? qData[idx+1].id : 'end');
@@ -219,33 +221,55 @@
     function showResults() {
         document.getElementById('page-loading').classList.remove('active');
         let k = [];
-        if (['B','C'].includes(userAnswers.q10)) k.push('m9');
+        
+        // --- 核心映射逻辑修正（排除法） ---
+        
+        // 1. 晒太阳：如果没能在起后30min内晒太阳(A)，才推荐
         if (['B','C','D'].includes(userAnswers.q11)) k.push('m1');
-        if (['A','B'].includes(userAnswers.q12)) k.push('m2');
-        if (['B','C'].includes(userAnswers.q14)) k.push('m3');
+        
+        // 2. 咖啡因：只有喝咖啡习惯且时机不对才推荐
+        const drinksCoffee = userAnswers.q7 && !userAnswers.q7.includes('D');
+        if (drinksCoffee) {
+            if (['A','B'].includes(userAnswers.q12)) k.push('m2');
+            if (['B','C'].includes(userAnswers.q14)) k.push('m3');
+        }
+
+        // 3. 傍晚光照
         if (userAnswers.q15 === 'C') k.push('m4');
+
+        // 4. 睡前电子产品
         if (userAnswers.q8 === 'A' || userAnswers.q8 === 'D') k.push('m10');
+
+        // 5. 温度
         if (['B','C','D'].includes(userAnswers.q9)) k.push('m6');
+
+        // 6. 运动：只有在睡前3小时运动(C)才建议调整
+        if (userAnswers.q13 === 'C') k.push('m7');
+
+        // 7. 午睡过长
+        if (userAnswers.q17 === 'B' || userAnswers.q17 === 'C') k.push('m8');
+
+        // 8. 起床不固定
+        if (['B','C'].includes(userAnswers.q10)) k.push('m9');
+
+        // 9. 错误入睡行为
+        if (userAnswers.q18 && (userAnswers.q18.includes('A') || userAnswers.q18.includes('C'))) k.push('m12');
         
         finalKeys = [...new Set(k)].slice(0, 5);
-        if (finalKeys.length < 3) finalKeys.push('m1', 'm9');
+        if (finalKeys.length < 3) {
+            const backups = ['m1', 'm9', 'm10', 'm6'];
+            backups.forEach(b => { if(!finalKeys.includes(b) && finalKeys.length < 4) finalKeys.push(b); });
+        }
         renderMeasureStep(0);
     }
 
     function renderMeasureStep(idx) {
         const resDiv = document.getElementById('result-container');
         const data = measures[finalKeys[idx]];
-        
         let overtimeMsg = "";
-        if (idx === 0) {
-            if (userAnswers.q5 === 'C' || userAnswers.q5 === 'D') {
-                const label = userAnswers.q5 === 'C' ? "经常加班" : "长期高强度加班";
-                overtimeMsg = `
-                <div class="warm-notice">
-                    我们注意到您目前正处于<strong>${label}</strong>的状态中。这种“身不由己”的快节奏，的确会让习惯的微调举步维艰。☕️<br><br>
-                    虽然外界环境可能暂时不在掌控之中，但即便在狭缝中，尝试做到测评中提到的微小改变，依然会为您的睡眠质量带来实质性的暖意。
-                </div>`;
-            }
+        if (idx === 0 && (userAnswers.q5 === 'C' || userAnswers.q5 === 'D')) {
+            const label = userAnswers.q5 === 'C' ? "经常加班" : "长期高强度加班";
+            overtimeMsg = `<div class="warm-notice">我们注意到您目前正处于<strong>${label}</strong>的状态中...虽然外界环境可能暂时不在掌控之中，但即便在狭缝中，尝试做到测评中提到的微小改变，依然会为您的睡眠质量带来实质性的暖意。</div>`;
         }
 
         resDiv.innerHTML = `
@@ -265,11 +289,11 @@
         const resDiv = document.getElementById('result-container');
         const listItems = finalKeys.map(k => `<li>${measures[k].title}</li>`).join('');
         resDiv.innerHTML = `
-            <div class="page active">
+            <div class="page active" style="animation: fadeIn 1.2s ease;">
                 <div class="summary-container">
                     <div class="summary-header">您的睡眠重塑计划</div>
                     <ul class="summary-list">${listItems}</ul>
-                    <div style="margin-top:80px; font-size:12px; color:#AAA; letter-spacing:3px">DEEP SLEEP LAB · 愿您今夜好眠</div>
+                    <div class="summary-footer">DEEP SLEEP LAB · 愿您今夜好眠</div>
                 </div>
                 <button class="btn-main" style="margin-top:60px" onclick="location.reload()">重新测评</button>
             </div>
