@@ -60,7 +60,6 @@
             border: 1px solid #F9EBC8; color: #5F4B32;
         }
 
-        /* 扉页布局回归 */
         .summary-container { border-left: 1px solid #EBEBEB; padding: 40px 60px; text-align: left; margin: 40px auto 0; max-width: 600px; }
         .summary-header { font-family: 'Noto Serif SC', serif; font-size: 32px; color: var(--g-gray); margin-bottom: 60px; }
         .summary-list { list-style: none; padding: 0; }
@@ -131,7 +130,7 @@
         m8: { title: "动力午休原则", desc: "午睡若需，请控制在20分钟内。这种‘微关机’能提神，却不至于干扰晚上的主睡眠。" },
         m9: { title: "坚持起床锚点", desc: "无论昨晚几点入睡，请在同一时间起床。这是对抗失眠和身体紊乱最坚实的根基。" },
         m10: { title: "数字化宵禁", desc: "睡前1小时远离蓝光屏幕。换成一段悠长呼吸或几页纸质书，给大脑一个入眠的缓冲区。" },
-        m12: { title: "床的刺激控制", desc: "如果20分钟内毫无睡意，请果断离床。别让‘床’与‘焦虑’在潜意识里打结，等困了再回来。" }
+        m12: { title: "床的刺激控制", desc: "如果20-25分钟内毫无睡意，请果断离床放松。别让‘床’与‘焦虑’在潜意识里打结，等困了再回来。" }
     };
 
     let userAnswers = {};
@@ -221,71 +220,69 @@
     function showResults() {
         document.getElementById('page-loading').classList.remove('active');
         let k = [];
-        
-        // --- 核心映射逻辑修正（排除法） ---
-        
-        // 1. 晒太阳：如果没能在起后30min内晒太阳(A)，才推荐
+
+        // 1. 晒太阳判定
         if (['B','C','D'].includes(userAnswers.q11)) k.push('m1');
-        
-        // 2. 咖啡因：只有喝咖啡习惯且时机不对才推荐
+        // 2 & 3. 咖啡因判定
         const drinksCoffee = userAnswers.q7 && !userAnswers.q7.includes('D');
         if (drinksCoffee) {
             if (['A','B'].includes(userAnswers.q12)) k.push('m2');
             if (['B','C'].includes(userAnswers.q14)) k.push('m3');
         }
-
-        // 3. 傍晚光照
+        // 4. 傍晚光照
         if (userAnswers.q15 === 'C') k.push('m4');
-
-        // 4. 睡前电子产品
+        // 5. 环境/屏幕
         if (userAnswers.q8 === 'A' || userAnswers.q8 === 'D') k.push('m10');
-
-        // 5. 温度
+        // 6. 温度
         if (['B','C','D'].includes(userAnswers.q9)) k.push('m6');
-
-        // 6. 运动：只有在睡前3小时运动(C)才建议调整
+        // 7. 剧烈运动
         if (userAnswers.q13 === 'C') k.push('m7');
-
-        // 7. 午睡过长
-        if (userAnswers.q17 === 'B' || userAnswers.q17 === 'C') k.push('m8');
-
-        // 8. 起床不固定
+        // 8. 午睡
+        if (userAnswers.q16 !== 'C' && ['B','C','D'].includes(userAnswers.q17)) k.push('m8');
+        // 9. 固定起床
         if (['B','C'].includes(userAnswers.q10)) k.push('m9');
 
-        // 9. 错误入睡行为
-        if (userAnswers.q18 && (userAnswers.q18.includes('A') || userAnswers.q18.includes('C'))) k.push('m12');
-        
-        finalKeys = [...new Set(k)].slice(0, 5);
-        if (finalKeys.length < 3) {
-            const backups = ['m1', 'm9', 'm10', 'm6'];
-            backups.forEach(b => { if(!finalKeys.includes(b) && finalKeys.length < 4) finalKeys.push(b); });
+        const totalIssues = [...new Set(k)];
+        let finalDisplayKeys = [];
+        let feedbackHeader = "";
+
+        if (totalIssues.length === 0) {
+            finalDisplayKeys = ['m12'];
+            feedbackHeader = `<div class="warm-notice" style="background:#E7F4EE; border-color:#A2CFB6; color:#1E4620;"><strong>卓越的生活自律者</strong> 🌿<br><br>测评显示，您已经建立了一套极其科学且符合昼夜节律的生活方式。这种对生理钟的尊重，是维持高水平认知和身心健康的最强护城河。请继续保持这份觉察。<br>下方为您保留最后一条“应急锦囊”，以备不时之需。</div>`;
+        } else if (totalIssues.length > 5) {
+            finalDisplayKeys = totalIssues.slice(0, 5);
+            feedbackHeader = `<div class="warm-notice" style="background:#FEE7E7; border-color:#F4BABA; color:#721C24;"><strong>特别警示：您的作息基石急需修复</strong> ⚠️<br><br>测评结果显示，您目前有多项生活习惯正在严重干扰您的睡眠系统。<strong>您的实际问题远不止下方列出的5项</strong>，但为了避免认知过载，我们建议您先从这5个核心环节开始强制干预。请务必予以高度重视。</div>`;
+        } else {
+            finalDisplayKeys = totalIssues;
         }
-        renderMeasureStep(0);
+
+        renderMeasureStep(0, finalDisplayKeys, feedbackHeader);
     }
 
-    function renderMeasureStep(idx) {
+    function renderMeasureStep(idx, finalKeys, header) {
         const resDiv = document.getElementById('result-container');
         const data = measures[finalKeys[idx]];
         let overtimeMsg = "";
         if (idx === 0 && (userAnswers.q5 === 'C' || userAnswers.q5 === 'D')) {
             const label = userAnswers.q5 === 'C' ? "经常加班" : "长期高强度加班";
-            overtimeMsg = `<div class="warm-notice">我们注意到您目前正处于<strong>${label}</strong>的状态中...虽然外界环境可能暂时不在掌控之中，但即便在狭缝中，尝试做到测评中提到的微小改变，依然会为您的睡眠质量带来实质性的暖意。</div>`;
+            overtimeMsg = `<div class="warm-notice">我们注意到您目前正处于<strong>${label}</strong>的状态中...虽然外界环境可能暂时不在掌控之中，但即便在狭缝中，尝试做到这些微小改变，依然会为您带来实质性的暖意。</div>`;
         }
 
         resDiv.innerHTML = `
             <div class="page active">
+                ${header && idx === 0 ? header : ""}
                 ${overtimeMsg}
-                <div class="q-number" style="color:var(--g-blue)">Solution ${idx + 1} / ${finalKeys.length}</div>
+                <div class="q-number" style="color:var(--g-blue)">建议方案 ${idx + 1} / ${finalKeys.length}</div>
                 <div class="q-title" style="font-weight:500;">${data.title}</div>
                 <p style="font-size:18px; line-height:1.8; color:var(--g-sub); max-width:600px; margin: 0 auto 40px;">${data.desc}</p>
-                <button class="btn-main" onclick="${idx < finalKeys.length - 1 ? `renderMeasureStep(${idx+1})` : 'renderSummary()'}">
+                <button class="btn-main" onclick="${idx < finalKeys.length - 1 ? `renderMeasureStep(${idx+1}, ${JSON.stringify(finalKeys)}, '${header.replace(/'/g, "\\'")}')` : `renderSummary(${JSON.stringify(finalKeys)})`}">
                     ${idx < finalKeys.length - 1 ? '继续查看' : '查看方案汇总'}
                 </button>
             </div>
         `;
     }
 
-    function renderSummary() {
+    function renderSummary(finalKeys) {
         const resDiv = document.getElementById('result-container');
         const listItems = finalKeys.map(k => `<li>${measures[k].title}</li>`).join('');
         resDiv.innerHTML = `
