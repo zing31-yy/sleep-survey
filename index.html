@@ -110,8 +110,8 @@
         { id: 'q8', type: 'radio', title: '您的睡前1小时通常做什么？', options: [['A','玩手机/ipad等'],['B','纸质阅读/听音乐或播客'],['C','瑜伽或冥想等放松活动'],['D','工作或处理事务']] },
         { id: 'q9', type: 'radio', title: '您的卧室夜间温度通常是多少？', options: [['A','18-22℃'],['B','23-26℃'],['C','18℃以下或27℃以上'],['D','不确定/没关注过']] },
         { id: 'q10', type: 'radio', title: '您的起床时间是否固定？', options: [['A','每天固定时间'],['B','周末晚起1-2小时'],['C','时间不规律']] },
-        { id: 'q11', type: 'radio', title: '起床多久后接触自然光照？', options: [['A','30分钟内'],['B','30-90分钟'],['C','超过90分钟'],['D','没留意']] },
-        { id: 'q12', type: 'radio', title: '起床后多久喝第一杯含咖啡因饮品？', options: [['A','30分钟内'],['B','30-90分钟'],['C','超过90分钟'],['D','偶尔喝/不喝']] },
+        { id: 'q11', type: 'radio', title: '起床多久后接触自然光照？', options: [['A','30分钟内'],['B','30-60分钟'],['C','超过60分钟'],['D','没留意']] },
+        { id: 'q12', type: 'radio', title: '起床后多久喝第一杯含咖啡因饮品？', options: [['A','30分钟内'],['B','30-60分钟'],['C','超过60分钟'],['D','偶尔喝/不喝']] },
         { id: 'q13', type: 'radio', title: '您通常进行剧烈运动的时间？', desc: '剧烈运动定义：通常心率达到120-140次/分钟以上，且伴随呼吸显著加快、无法顺畅说话的体感（如快跑、动感单车等）', options: [['A','早晨 6-9 点'],['B','下午 4-7 点'],['C','睡前 3 小时内'],['D','其他时间'],['E','几乎不进行剧烈运动']] },
         { id: 'q14', type: 'radio', title: '您每天最后喝含咖啡因饮品的时间是？', options: [['A','下午2点前'],['B','下午2-6点'],['C','下午6点后'],['D','偶尔喝/不喝']] },
         { id: 'q15', type: 'radio', title: '每周有多少天在傍晚接触自然光？', options: [['A','每周5-7天'],['B','每周3-4天'],['C','几乎没有']] },
@@ -221,25 +221,17 @@
         document.getElementById('page-loading').classList.remove('active');
         let k = [];
 
-        // 1. 晒太阳判定
         if (['B','C','D'].includes(userAnswers.q11)) k.push('m1');
-        // 2 & 3. 咖啡因判定
         const drinksCoffee = userAnswers.q7 && !userAnswers.q7.includes('D');
         if (drinksCoffee) {
             if (['A','B'].includes(userAnswers.q12)) k.push('m2');
             if (['B','C'].includes(userAnswers.q14)) k.push('m3');
         }
-        // 4. 傍晚光照
         if (userAnswers.q15 === 'C') k.push('m4');
-        // 5. 环境/屏幕
         if (userAnswers.q8 === 'A' || userAnswers.q8 === 'D') k.push('m10');
-        // 6. 温度
         if (['B','C','D'].includes(userAnswers.q9)) k.push('m6');
-        // 7. 剧烈运动
         if (userAnswers.q13 === 'C') k.push('m7');
-        // 8. 午睡
         if (userAnswers.q16 !== 'C' && ['B','C','D'].includes(userAnswers.q17)) k.push('m8');
-        // 9. 固定起床
         if (['B','C'].includes(userAnswers.q10)) k.push('m9');
 
         const totalIssues = [...new Set(k)];
@@ -268,6 +260,12 @@
             overtimeMsg = `<div class="warm-notice">我们注意到您目前正处于<strong>${label}</strong>的状态中...虽然外界环境可能暂时不在掌控之中，但即便在狭缝中，尝试做到这些微小改变，依然会为您带来实质性的暖意。</div>`;
         }
 
+        // --- 核心修复：即使只有一个方案，也能正确判断跳转汇总 ---
+        const isLast = idx >= finalKeys.length - 1;
+        const buttonAction = isLast 
+            ? `renderSummary(${JSON.stringify(finalKeys)})` 
+            : `renderMeasureStep(${idx + 1}, ${JSON.stringify(finalKeys)}, '${header.replace(/'/g, "\\'")}')`;
+
         resDiv.innerHTML = `
             <div class="page active">
                 ${header && idx === 0 ? header : ""}
@@ -275,8 +273,8 @@
                 <div class="q-number" style="color:var(--g-blue)">建议方案 ${idx + 1} / ${finalKeys.length}</div>
                 <div class="q-title" style="font-weight:500;">${data.title}</div>
                 <p style="font-size:18px; line-height:1.8; color:var(--g-sub); max-width:600px; margin: 0 auto 40px;">${data.desc}</p>
-                <button class="btn-main" onclick="${idx < finalKeys.length - 1 ? `renderMeasureStep(${idx+1}, ${JSON.stringify(finalKeys)}, '${header.replace(/'/g, "\\'")}')` : `renderSummary(${JSON.stringify(finalKeys)})`}">
-                    ${idx < finalKeys.length - 1 ? '继续查看' : '查看方案汇总'}
+                <button class="btn-main" onclick="${buttonAction}">
+                    ${isLast ? '查看方案汇总' : '继续查看'}
                 </button>
             </div>
         `;
