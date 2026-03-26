@@ -4,94 +4,122 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DEEP SLEEP LAB | 科学睡眠测评</title>
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=Noto+Serif+SC:wght@700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --google-gray: #202124;
-            --google-sub: #70757a;
-            --tiffany-blue: #81D8D0;
-            --bg-light: #F8F9FA;
-            --card-shadow: 0 1px 6px rgba(32,33,36,.28);
+            --g-blue: #4285F4;
+            --g-red: #EA4335;
+            --g-yellow: #FBBC05;
+            --g-green: #34A853;
+            --g-gray: #202124;
+            --g-sub: #70757a;
+            --bg-light: #FFFFFF;
         }
 
         body, html {
             margin: 0; padding: 0; height: 100%;
-            font-family: 'Google Sans', 'Noto Sans SC', arial, sans-serif;
-            background-color: #FFFFFF;
-            color: var(--google-gray);
+            font-family: 'Google Sans', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--g-gray);
             -webkit-font-smoothing: antialiased;
         }
 
-        #app { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; }
+        #app { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-        /* 模拟 Google 搜索框的高级感容器 */
         .container {
-            width: 90%; max-width: 800px; margin-top: 10vh;
-            padding: 40px; text-align: center; position: relative;
+            width: 90%; max-width: 800px; padding: 40px;
+            text-align: center; position: relative;
         }
 
-        .divider { width: 100%; height: 1px; background: #EBEBEB; margin: 30px 0; }
+        /* 三色水滴 Logo */
+        .logo-box { margin-bottom: 30px; }
+        .logo-svg { width: 60px; height: 60px; }
 
-        /* 题目样式 */
-        .page { display: none; animation: fadeIn 0.4s ease-in-out; }
+        /* 首页文字回归 */
+        .home-title { font-size: 42px; font-weight: 500; letter-spacing: 2px; margin: 10px 0; }
+        .home-sub { color: var(--g-sub); font-size: 18px; margin-bottom: 40px; letter-spacing: 4px; }
+        .feature-tags { font-size: 14px; font-weight: 500; color: #9aa0a6; letter-spacing: 2px; margin-bottom: 50px; }
+
+        /* 进度条：使用四色 */
+        .progress-bar {
+            position: absolute; top: 0; left: 0; width: 0%; height: 4px;
+            background: linear-gradient(to right, var(--g-blue), var(--g-red), var(--g-yellow), var(--g-green));
+            transition: width 0.4s ease;
+        }
+
+        .page { display: none; animation: fadeIn 0.5s ease; }
         .page.active { display: block; }
-        
-        .q-number { font-size: 14px; color: var(--google-sub); margin-bottom: 12px; letter-spacing: 1px; }
-        .q-title { font-size: 28px; font-weight: 400; margin-bottom: 48px; line-height: 1.3; color: var(--google-gray); }
 
-        /* 选项设计：参考 Google 搜索结果卡片 */
-        .options-grid { display: flex; flex-direction: column; gap: 12px; max-width: 600px; margin: 0 auto; }
+        .q-number { font-size: 13px; font-weight: 500; color: var(--g-sub); margin-bottom: 10px; text-transform: uppercase; }
+        .q-title { font-size: 26px; font-weight: 400; margin-bottom: 40px; line-height: 1.5; }
+
+        /* 选项布局 */
+        .options-grid { display: flex; flex-direction: column; gap: 12px; max-width: 550px; margin: 0 auto; }
         .option-item {
-            padding: 18px 24px; border: 1px solid #DADCE0; border-radius: 8px;
+            padding: 16px 24px; border: 1px solid #DADCE0; border-radius: 24px;
             background: #FFF; cursor: pointer; transition: all 0.2s;
-            font-size: 16px; text-align: left; display: flex; align-items: center;
+            font-size: 16px; text-align: left;
         }
-        .option-item:hover { background-color: #F1F3F4; border-color: transparent; }
-        .option-item.selected { background-color: #E8F0FE; border-color: #4285F4; color: #1967D2; font-weight: 500; }
+        .option-item:hover { background-color: #F8F9FA; border-color: var(--g-blue); }
+        .option-item.selected { background-color: #E8F0FE; border-color: var(--g-blue); color: var(--g-blue); font-weight: 500; }
 
-        /* 按钮：Google 蓝色风格 */
-        .btn-google {
-            background-color: #1A73E8; color: white; border: none;
-            padding: 12px 32px; cursor: pointer; font-size: 14px; font-weight: 500;
-            border-radius: 4px; transition: box-shadow 0.2s; margin-top: 32px;
+        /* 按钮：Google 风格 */
+        .btn-main {
+            background-color: #f8f9fa; color: #3c4043; border: 1px solid #f8f9fa;
+            padding: 10px 24px; cursor: pointer; font-size: 14px; font-weight: 500;
+            border-radius: 4px; transition: all 0.2s; margin-top: 30px;
         }
-        .btn-google:hover { background-color: #185ABC; box-shadow: 0 1px 3px rgba(60,64,67,.3); }
+        .btn-main:hover { border: 1px solid #dadce0; box-shadow: 0 1px 1px rgba(0,0,0,0.1); color: #202124; }
 
-        .back-btn { position: absolute; top: -50px; left: 0; background: none; border: none; color: var(--google-sub); cursor: pointer; font-size: 14px; }
-        .back-btn:hover { text-decoration: underline; }
+        .back-btn { position: absolute; top: -20px; left: 0; background: none; border: none; color: var(--g-sub); cursor: pointer; font-size: 14px; }
 
-        /* 加载页：极简 Google 动画 */
-        .loading-text { font-size: 22px; color: var(--google-gray); font-weight: 400; }
-        .spinner {
-            width: 40px; height: 40px; border: 3px solid #f3f3f3; border-top: 3px solid var(--tiffany-blue);
-            border-radius: 50%; margin: 30px auto; animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* 加载动画页 */
+        .spinner-box { margin-bottom: 30px; display: flex; justify-content: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
+        .dot:nth-child(1) { background: var(--g-blue); animation-delay: -0.32s; }
+        .dot:nth-child(2) { background: var(--g-red); animation-delay: -0.16s; }
+        .dot:nth-child(3) { background: var(--g-yellow); }
+        .dot:nth-child(4) { background: var(--g-green); animation-delay: 0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
 
-        /* 汇总页：扉页设计 */
-        .summary-box { border-left: 4px solid var(--tiffany-blue); padding-left: 30px; text-align: left; margin: 40px auto; max-width: 500px; }
-        .summary-item { font-size: 20px; margin-bottom: 24px; font-weight: 500; color: var(--google-gray); }
+        /* 总结扉页 */
+        .summary-container { border-left: 1px solid #EBEBEB; padding: 40px 60px; text-align: left; margin: 0 auto; max-width: 600px; }
+        .summary-header { font-family: 'Noto Serif SC', serif; font-size: 32px; color: var(--g-gray); margin-bottom: 60px; }
+        .summary-list { list-style: none; padding: 0; }
+        .summary-list li { font-size: 18px; margin-bottom: 30px; letter-spacing: 1px; color: #3C4043; border-bottom: 1px solid #F1F3F4; padding-bottom: 15px; }
+        .summary-footer { margin-top: 80px; font-size: 12px; color: #AAA; letter-spacing: 3px; }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div id="app">
+    <div class="progress-bar" id="p-bar"></div>
     <div class="container">
+        <div class="logo-box">
+            <svg class="logo-svg" viewBox="0 0 100 100">
+                <path d="M50 15 Q35 45 35 65 A15 15 0 0 0 65 65 Q65 45 50 15" fill="#4285F4" opacity="0.9"/>
+                <path d="M30 35 Q15 65 15 85 A15 15 0 0 0 45 85 Q45 65 30 35" fill="#34A853" opacity="0.8"/>
+                <path d="M70 35 Q55 65 55 85 A15 15 0 0 0 85 85 Q85 65 70 35" fill="#EA4335" opacity="0.8"/>
+            </svg>
+        </div>
+
         <div id="page-home" class="page active">
-            <h1 style="font-size: 48px; font-weight: 500; margin-bottom: 8px;">DEEP SLEEP LAB</h1>
-            <p style="color: var(--google-sub); font-size: 16px; margin-bottom: 40px;">专注睡眠底层逻辑的科学测评</p>
-            <div class="divider"></div>
-            <button class="btn-google" onclick="nextPage('q1')">开始测评</button>
+            <h1 class="home-title">DEEP SLEEP LAB</h1>
+            <p class="home-sub">找回失去的睡眠</p>
+            <div class="feature-tags">无需药物 ｜ 无痛干预 ｜ 21天重塑睡眠</div>
+            <button class="btn-main" onclick="nextPage('q1')" style="padding: 12px 40px; font-size: 16px;">开始免费测评</button>
         </div>
 
         <div id="question-container"></div>
 
         <div id="page-loading" class="page">
-            <div class="spinner"></div>
-            <p class="loading-text">正在分析您的睡眠行为数据...</p>
-            <p style="color:var(--google-sub); font-size: 14px;">定制化改善方案生成中</p>
+            <div class="spinner-box">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+            <h2 style="font-weight: 400; color:var(--g-gray)">致 每一位渴望好眠的旅人</h2>
+            <p style="color:var(--g-sub)">正在为您量身定制睡眠改善方案...</p>
         </div>
 
         <div id="result-container"></div>
@@ -121,17 +149,17 @@
     ];
 
     const measures = {
-        m1: { title: "清晨光照补给", desc: "光照是生物钟最强的同步因子。起床后尽快接触自然光，能有效抑制褪黑素并开启一天的清醒节律。" },
-        m2: { title: "延迟咖啡因摄入", desc: "起床后皮质醇水平自然升高，此时摄入咖啡因会产生耐受。建议推迟至90分钟后，利用其阻断腺苷的特性维持长效专注。" },
-        m3: { title: "下午咖啡禁令", desc: "咖啡因半衰期约6小时。下午2点后避免摄入，可确保入睡时大脑腺苷受体不再被占据。" },
-        m4: { title: "日落光谱信号", desc: "傍晚接触低角度的暖色阳光能向大脑发送黑夜即将来临的信号，自然诱发睡意。" },
-        m6: { title: "优化物理眠温", desc: "核心体温下降是深度睡眠的诱导剂。将卧室控制在18-22℃，能显著缩短入睡潜伏期。" },
-        m7: { title: "调整运动窗口", desc: "高强度训练会提升体温并兴奋神经。请确保在睡前4小时完成，给身体降温和放松的时间。" },
-        m8: { title: "科学动力午休", desc: "午睡若超过20分钟会进入深睡，醒后产生“睡眠惯性”导致昏沉。严格控制在15-20分钟效果最佳。" },
-        m9: { title: "保持起床锚点", desc: "无论入睡多晚，坚持同一时间起床。这是训练大脑规律性、解决入睡困难的核心基石。" },
-        m10: { title: "数字化宵禁", desc: "屏幕蓝光会直接阻断褪黑素分泌。睡前1小时切换为非电子设备活动，为大脑构建入眠缓冲区。" },
-        m12: { title: "刺激控制疗法", desc: "不在床上进行除睡眠外的活动。若20分钟无法入睡请果断离床，避免床与清醒产生神经连接。" },
-        m11: { title: "神经舒缓策略", desc: "补充镁或进行肌肉渐进式放松，能辅助降低交感神经兴奋度，平滑切入睡眠状态。" }
+        m1: { title: "清晨光照补给", desc: "建议起床后30-60分钟内接触自然光。这能通过视网膜抑制褪黑素分泌，精准重置大脑的生物钟起点。" },
+        m2: { title: "延迟咖啡因摄入", desc: "将第一杯咖啡推迟到起床90分钟后。此时体内腺苷已自然代谢，能有效避免午后的精力崩盘。" },
+        m3: { title: "午后咖啡禁令", desc: "由于咖啡因半衰期极长，建议在计划入睡前8-10小时停止摄入。这能保证入睡时大脑腺苷受体不被干扰。" },
+        m4: { title: "日落光影重塑", desc: "傍晚的光谱包含更多红光，能向大脑发送“夜晚来临”的信号。建议在日落前进行户外活动，诱发自然睡意。" },
+        m6: { title: "营造清凉眠环境", desc: "核心体温下降是深度睡眠的开关。请尝试将卧室温度保持在18-22℃，这是科学证实的最佳睡眠温区。" },
+        m7: { title: "重划运动窗口", desc: "剧烈运动会提升核心体温并刺激交感神经。请确保高强度训练在睡前4小时以上完成，给身体降温时间。" },
+        m8: { title: "动力午休限制", desc: "如果需要午休，请严格限制在20分钟内。这能获得精神提振，同时避免因进入深度睡眠导致的醒后萎靡。" },
+        m9: { title: "锚定起床时间", desc: "无论工作日还是周末，请在同一时间起床。这是解决“社交时差”和入睡困难的第一要务。" },
+        m10: { title: "数字化宵禁", desc: "睡前1小时必须远离所有蓝光屏幕。建议换成纸质阅读或冥想放松，为大脑构建入眠缓冲区。" },
+        m12: { title: "刺激控制逻辑", desc: "如果20分钟内未入睡，请果断起床离开卧室做放松的事。不要让大脑建立“床=焦虑清醒”的错误连接。" },
+        m11: { title: "微量元素协同", desc: "在习惯改善的基础上，睡前补充200mg镁与茶氨酸，能显著缓解神经系统的过度兴奋，提升睡眠深度。" }
     };
 
     let userAnswers = {};
@@ -144,10 +172,10 @@
         div.className = 'page';
         div.innerHTML = `
             <button class="back-btn" onclick="prevPage()">← 返回</button>
-            <div class="q-number">第 ${idx + 1} 步 / 共 18 步</div>
+            <div class="q-number">Step ${idx + 1} / 18</div>
             <div class="q-title">${q.title}</div>
             <div class="options-grid">${q.options.map(opt => `<div class="option-item" onclick="handleSelect('${q.id}', '${opt[0]}', ${q.type==='checkbox'})">${opt[1]}</div>`).join('')}</div>
-            ${q.type === 'checkbox' ? `<button class="btn-google" onclick="nextPage('${qData[idx+1]?.id || 'end'}')">继续</button>` : ''}
+            ${q.type === 'checkbox' ? `<button class="btn-main" onclick="nextPage('${qData[idx+1]?.id || 'end'}')">继续下一步</button>` : ''}
         `;
         container.appendChild(div);
     });
@@ -160,7 +188,7 @@
             setTimeout(() => {
                 const idx = qData.findIndex(q => q.id === qid);
                 nextPage(qData[idx+1] ? qData[idx+1].id : 'end');
-            }, 200);
+            }, 250);
         } else {
             if (!userAnswers[qid]) userAnswers[qid] = [];
             const pos = userAnswers[qid].indexOf(val);
@@ -173,9 +201,12 @@
     function nextPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         if (id === 'end') {
+            document.getElementById('p-bar').style.width = '100%';
             document.getElementById('page-loading').classList.add('active');
             setTimeout(showResults, 5000);
         } else {
+            const idx = qData.findIndex(q => q.id === id);
+            document.getElementById('p-bar').style.width = `${(idx / 18) * 100}%`;
             document.getElementById(`page-${id}`).classList.add('active');
             pageHistory.push(id);
         }
@@ -193,7 +224,6 @@
     let finalKeys = [];
     function showResults() {
         document.getElementById('page-loading').classList.remove('active');
-        // 筛选逻辑...
         let k = [];
         if (['B','C'].includes(userAnswers.q10)) k.push('m9');
         if (['B','C','D'].includes(userAnswers.q11)) k.push('m1');
@@ -204,7 +234,7 @@
         if (['B','C','D'].includes(userAnswers.q9)) k.push('m6');
         
         finalKeys = [...new Set(k)].slice(0, 5);
-        if (finalKeys.length < 3) finalKeys.push('m11', 'm1', 'm12');
+        if (finalKeys.length < 3) finalKeys.push('m11', 'm9', 'm1');
         renderMeasureStep(0);
     }
 
@@ -213,11 +243,11 @@
         const data = measures[finalKeys[idx]];
         resDiv.innerHTML = `
             <div class="page active">
-                <div class="q-number">建议方案 ${idx + 1} / ${finalKeys.length}</div>
-                <div class="q-title" style="color:#1A73E8; font-weight:500;">${data.title}</div>
-                <p style="font-size:18px; line-height:1.6; color:var(--google-sub); max-width:600px; margin: 0 auto 40px;">${data.desc}</p>
-                <button class="btn-google" onclick="${idx < finalKeys.length - 1 ? `renderMeasureStep(${idx+1})` : 'renderSummary()'}">
-                    ${idx < finalKeys.length - 1 ? '下一步' : '查看汇总'}
+                <div class="q-number" style="color:var(--g-blue)">Exclusive Solution ${idx + 1} / ${finalKeys.length}</div>
+                <div class="q-title" style="font-weight:500;">${data.title}</div>
+                <p style="font-size:18px; line-height:1.8; color:var(--g-sub); max-width:600px; margin: 0 auto 40px;">${data.desc}</p>
+                <button class="btn-main" onclick="${idx < finalKeys.length - 1 ? `renderMeasureStep(${idx+1})` : 'renderSummary()'}">
+                    ${idx < finalKeys.length - 1 ? '继续查看' : '查看方案汇总'}
                 </button>
             </div>
         `;
@@ -225,13 +255,15 @@
 
     function renderSummary() {
         const resDiv = document.getElementById('result-container');
-        const listItems = finalKeys.map(k => `<div class="summary-item">${measures[k].title}</div>`).join('');
+        const listItems = finalKeys.map(k => `<li>${measures[k].title}</li>`).join('');
         resDiv.innerHTML = `
-            <div class="page active">
-                <h2 style="font-size: 32px; font-weight: 500; margin-bottom: 8px;">睡眠改善计划汇总</h2>
-                <div class="divider"></div>
-                <div class="summary-box">${listItems}</div>
-                <button class="btn-google" style="background:#F1F3F4; color:var(--google-sub);" onclick="location.reload()">重新测评</button>
+            <div class="page active" style="animation: fadeIn 1.2s ease;">
+                <div class="summary-container">
+                    <div class="summary-header">您的睡眠重塑计划</div>
+                    <ul class="summary-list">${listItems}</ul>
+                    <div class="summary-footer">DEEP SLEEP LAB · 愿您今夜好眠</div>
+                </div>
+                <button class="btn-main" style="margin-top:60px" onclick="location.reload()">重新测评</button>
             </div>
         `;
     }
