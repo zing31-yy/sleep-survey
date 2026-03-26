@@ -3,81 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DEEP SLEEP LAB | 专属睡眠方案</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;600&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    <title>DEEP SLEEP LAB | 科学睡眠测评</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --tiffany-blue: #81D8D0; 
-            --tiffany-dark: #68BDB5;
-            --soft-grey: #F8FAFA;
-            --text-main: #2C3E50;
-            --maillard: #6F4E37;
-            --silver-line: #E8EDED;
+            --google-gray: #202124;
+            --google-sub: #70757a;
+            --tiffany-blue: #81D8D0;
+            --bg-light: #F8F9FA;
+            --card-shadow: 0 1px 6px rgba(32,33,36,.28);
         }
 
         body, html {
             margin: 0; padding: 0; height: 100%;
-            font-family: 'Montserrat', "PingFang SC", sans-serif;
-            background-color: var(--soft-grey);
-            color: var(--text-main);
+            font-family: 'Google Sans', 'Noto Sans SC', arial, sans-serif;
+            background-color: #FFFFFF;
+            color: var(--google-gray);
             -webkit-font-smoothing: antialiased;
         }
 
-        #app { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+        #app { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; }
 
+        /* 模拟 Google 搜索框的高级感容器 */
         .container {
-            width: 85%; max-width: 1000px; min-height: 600px; padding: 80px 50px;
-            background: #FFFFFF; border-radius: 2px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.02);
-            text-align: center; position: relative;
-            display: flex; flex-direction: column; justify-content: center;
+            width: 90%; max-width: 800px; margin-top: 10vh;
+            padding: 40px; text-align: center; position: relative;
         }
 
-        .divider { width: 30px; height: 1.5px; background: var(--tiffany-blue); margin: 25px auto; }
+        .divider { width: 100%; height: 1px; background: #EBEBEB; margin: 30px 0; }
 
         /* 题目样式 */
-        .page { display: none; animation: fadeIn 0.8s ease; }
+        .page { display: none; animation: fadeIn 0.4s ease-in-out; }
         .page.active { display: block; }
-        .q-number { font-size: 12px; font-weight: 600; color: var(--tiffany-dark); margin-bottom: 30px; letter-spacing: 4px; }
-        .q-title { font-size: 26px; font-weight: 600; margin-bottom: 50px; line-height: 1.6; letter-spacing: 1px; }
+        
+        .q-number { font-size: 14px; color: var(--google-sub); margin-bottom: 12px; letter-spacing: 1px; }
+        .q-title { font-size: 28px; font-weight: 400; margin-bottom: 48px; line-height: 1.3; color: var(--google-gray); }
 
-        /* 选项布局 */
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 800px; margin: 0 auto; }
+        /* 选项设计：参考 Google 搜索结果卡片 */
+        .options-grid { display: flex; flex-direction: column; gap: 12px; max-width: 600px; margin: 0 auto; }
         .option-item {
-            padding: 24px 30px; border: 1px solid var(--silver-line); background: #FFF;
-            cursor: pointer; transition: all 0.25s; font-size: 15px; text-align: left;
+            padding: 18px 24px; border: 1px solid #DADCE0; border-radius: 8px;
+            background: #FFF; cursor: pointer; transition: all 0.2s;
+            font-size: 16px; text-align: left; display: flex; align-items: center;
         }
-        .option-item:hover { border-color: var(--tiffany-blue); color: var(--tiffany-dark); }
-        .option-item.selected { border-color: var(--tiffany-blue); background: rgba(129, 216, 208, 0.04); font-weight: 600; }
+        .option-item:hover { background-color: #F1F3F4; border-color: transparent; }
+        .option-item.selected { background-color: #E8F0FE; border-color: #4285F4; color: #1967D2; font-weight: 500; }
 
-        .btn-tiffany {
-            background-color: var(--tiffany-blue); color: white; border: none;
-            padding: 20px 70px; cursor: pointer; letter-spacing: 5px; font-size: 14px; font-weight: 600;
-            transition: 0.3s; margin-top: 40px;
+        /* 按钮：Google 蓝色风格 */
+        .btn-google {
+            background-color: #1A73E8; color: white; border: none;
+            padding: 12px 32px; cursor: pointer; font-size: 14px; font-weight: 500;
+            border-radius: 4px; transition: box-shadow 0.2s; margin-top: 32px;
         }
-        .btn-tiffany:hover { background-color: var(--tiffany-dark); box-shadow: 0 10px 20px rgba(129,216,208,0.2); }
+        .btn-google:hover { background-color: #185ABC; box-shadow: 0 1px 3px rgba(60,64,67,.3); }
 
-        .back-btn { position: absolute; top: 50px; left: 50px; background: none; border: none; color: #BBB; cursor: pointer; font-size: 18px; letter-spacing: 2px; }
+        .back-btn { position: absolute; top: -50px; left: 0; background: none; border: none; color: var(--google-sub); cursor: pointer; font-size: 14px; }
+        .back-btn:hover { text-decoration: underline; }
 
-        /* 加载页美化 */
-        #page-loading { color: var(--maillard); }
-        .orbit-container { position: relative; width: 100px; height: 100px; margin: 0 auto 40px; }
-        .orbit { 
-            position: absolute; width: 100%; height: 100%; border: 1px solid var(--tiffany-blue); 
-            border-radius: 50%; opacity: 0.3; animation: rotate 4s linear infinite; 
+        /* 加载页：极简 Google 动画 */
+        .loading-text { font-size: 22px; color: var(--google-gray); font-weight: 400; }
+        .spinner {
+            width: 40px; height: 40px; border: 3px solid #f3f3f3; border-top: 3px solid var(--tiffany-blue);
+            border-radius: 50%; margin: 30px auto; animation: spin 1s linear infinite;
         }
-        .dot { position: absolute; width: 8px; height: 8px; background: var(--tiffany-blue); border-radius: 50%; top: -4px; left: 50%; }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .loading-text-main { font-size: 28px; font-family: 'Noto Serif SC', serif; font-weight: 700; margin-bottom: 15px; color: var(--maillard); }
-        .loading-text-sub { font-size: 14px; letter-spacing: 3px; color: var(--tiffany-dark); opacity: 0.8; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* 汇总扉页 */
-        .summary-title { font-family: 'Noto Serif SC', serif; font-size: 32px; color: var(--maillard); margin-bottom: 60px; }
-        .summary-list { list-style: none; padding: 0; display: inline-block; text-align: left; }
-        .summary-list li { font-size: 18px; margin-bottom: 25px; letter-spacing: 2px; border-bottom: 1px inset var(--silver-line); padding-bottom: 10px; }
-        .summary-list li::before { content: "·"; color: var(--tiffany-blue); margin-right: 15px; font-weight: bold; }
+        /* 汇总页：扉页设计 */
+        .summary-box { border-left: 4px solid var(--tiffany-blue); padding-left: 30px; text-align: left; margin: 40px auto; max-width: 500px; }
+        .summary-item { font-size: 20px; margin-bottom: 24px; font-weight: 500; color: var(--google-gray); }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -85,23 +80,18 @@
 <div id="app">
     <div class="container">
         <div id="page-home" class="page active">
-            <div class="q-number" style="margin-top:0">WELCOME</div>
-            <div class="home-title" style="font-size: 42px; letter-spacing: 10px;">DEEP SLEEP LAB</div>
+            <h1 style="font-size: 48px; font-weight: 500; margin-bottom: 8px;">DEEP SLEEP LAB</h1>
+            <p style="color: var(--google-sub); font-size: 16px; margin-bottom: 40px;">专注睡眠底层逻辑的科学测评</p>
             <div class="divider"></div>
-            <div class="loading-text-sub" style="margin-bottom: 50px;">找回失去的睡眠</div>
-            <button class="btn-tiffany" onclick="nextPage('q1')">开始测评</button>
+            <button class="btn-google" onclick="nextPage('q1')">开始测评</button>
         </div>
 
         <div id="question-container"></div>
 
         <div id="page-loading" class="page">
-            <div class="orbit-container">
-                <div class="orbit"></div>
-                <div class="orbit" style="animation-duration: 6s; width: 70%; height: 70%; top: 15%; left: 15%;"></div>
-                <div class="dot" style="left: 50%;"></div>
-            </div>
-            <div class="loading-text-main">致 每一位渴望好眠的旅人</div>
-            <div class="loading-text-sub">正在为您量身定制睡眠改善方案...</div>
+            <div class="spinner"></div>
+            <p class="loading-text">正在分析您的睡眠行为数据...</p>
+            <p style="color:var(--google-sub); font-size: 14px;">定制化改善方案生成中</p>
         </div>
 
         <div id="result-container"></div>
@@ -113,35 +103,35 @@
         { id: 'q1', type: 'radio', title: '您的年龄是？', options: [['A','18岁以下'],['B','18-25岁'],['C','26-35岁'],['D','36-50岁'],['E','50岁以上']] },
         { id: 'q2', type: 'radio', title: '您的性别？', options: [['A','男性'],['B','女性'],['C','其他/不愿透露']] },
         { id: 'q3', type: 'radio', title: '您目前平均每晚睡眠时长是多少？', options: [['A','不足6小时'],['B','6-8小时（不含）'],['C','8小时及以上']] },
-        { id: 'q4', type: 'checkbox', title: '您目前最主要的睡眠问题是？（多选）', options: [['A','入睡困难'],['B','睡眠浅、容易醒'],['C','早醒'],['D','晨起疲累'],['E','想进一步提升']] },
+        { id: 'q4', type: 'checkbox', title: '您目前最主要的睡眠问题是？（可多选）', options: [['A','入睡困难'],['B','睡眠浅、容易醒'],['C','早醒'],['D','晨起疲累'],['E','想进一步提升']] },
         { id: 'q5', type: 'radio', title: '您平均每周加班情况是？', options: [['A','几乎不加班'],['B','偶尔加班'],['C','经常加班'],['D','长期高强度加班']] },
-        { id: 'q6', type: 'checkbox', title: '您是否有以下健康问题？（多选）', options: [['A','慢性疼痛'],['B','呼吸问题'],['C','心理问题'],['D','正在服药'],['E','以上都没有']] },
-        { id: 'q7', type: 'checkbox', title: '您是否有饮用含咖啡因饮品的习惯？（多选）', options: [['A','咖啡'],['B','茶饮'],['C','可乐/奶茶/能量饮料'],['D','不喝/很少喝']] },
+        { id: 'q6', type: 'checkbox', title: '您是否有以下健康问题？（可多选）', options: [['A','慢性疼痛'],['B','呼吸问题'],['C','心理问题'],['D','正在服药'],['E','以上都没有']] },
+        { id: 'q7', type: 'checkbox', title: '您是否有饮用含咖啡因饮品的习惯？（可多选）', options: [['A','咖啡'],['B','茶饮'],['C','可乐/奶茶/能量饮料'],['D','不喝/很少喝']] },
         { id: 'q8', type: 'radio', title: '您的睡前1小时通常做什么？', options: [['A','玩手机/ipad等'],['B','纸质阅读/听音乐或播客'],['C','瑜伽或冥想等放松活动'],['D','工作或处理事务']] },
         { id: 'q9', type: 'radio', title: '您的卧室夜间温度通常是多少？', options: [['A','18-22℃'],['B','23-26℃'],['C','18℃以下或27℃以上'],['D','不确定/没关注过']] },
-        { id: 'q10', type: 'radio', title: '您的起床时间是否固定？', options: [['A','每天固定时间'],['B','周末晚起1-2小时'],['C','时间不规律']] },
+        { id: 'q10', type: 'radio', title: '您的起床时间是否固定？', options: [['A','每天固定时间'],['B','工作日固定，周末晚起1-2小时'],['C','时间不规律']] },
         { id: 'q11', type: 'radio', title: '起床多久后接触自然光照？', options: [['A','30分钟内'],['B','30-90分钟'],['C','超过90分钟'],['D','没留意']] },
-        { id: 'q12', type: 'radio', title: '起床后多久喝第一杯含咖啡因饮品？', options: [['A','30分钟内'],['B','30-90分钟'],['C','超过90分钟'],['D','偶尔喝'],['E','不喝']] },
+        { id: 'q12', type: 'radio', title: '起床后多久喝第一杯含咖啡因饮品？', options: [['A','30分钟内'],['B','30-90分钟'],['C','超过90分钟'],['D','偶尔喝/不喝']] },
         { id: 'q13', type: 'radio', title: '您通常在什么时间进行剧烈运动？', options: [['A','早晨 6-9 点'],['B','下午 4-7 点'],['C','睡前 3 小时内'],['D','其他时间'],['E','几乎不进行剧烈运动']] },
         { id: 'q14', type: 'radio', title: '您每天最后喝含咖啡因饮品的时间是？', options: [['A','下午2点前'],['B','下午2-6点'],['C','下午6点后'],['D','偶尔喝/不喝']] },
         { id: 'q15', type: 'radio', title: '每周有多少天在傍晚接触自然光？', options: [['A','每周5-7天'],['B','每周3-4天'],['C','几乎没有']] },
         { id: 'q16', type: 'radio', title: '您有午睡习惯吗？', options: [['A','有固定习惯'],['B','偶尔午睡'],['C','几乎不午睡']] },
         { id: 'q17', type: 'radio', title: '通常您午睡的时长是多久？', options: [['A','20分钟以内'],['B','20-60分钟'],['C','超过60分钟'],['D','不确定'],['E','不午睡']] },
-        { id: 'q18', type: 'checkbox', title: '躺下30分钟还没入睡，您会？（多选）', options: [['A','继续躺着尝试入睡'],['B','起床等困了再睡'],['C','在床上看书/玩手机']] }
+        { id: 'q18', type: 'checkbox', title: '躺下30分钟还没入睡，您会？（可多选）', options: [['A','继续躺着尝试入睡'],['B','起床等困了再睡'],['C','在床上看书/玩手机']] }
     ];
 
     const measures = {
-        m1: { title: "清晨光照补给", desc: "建议起床后30-60分钟内接触自然光，精准重置大脑生物钟起点。" },
-        m2: { title: "延迟咖啡因摄入", desc: "将首杯咖啡推迟至起后90分钟，待腺苷自然代谢，避免午后精力崩盘。" },
-        m3: { title: "午后咖啡禁令", desc: "入睡前8-10小时停止摄入咖啡因，确保受体不被干扰。" },
-        m4: { title: "日落光影重塑", desc: "傍晚接触红光光谱，诱发自然褪黑素分泌。" },
-        m6: { title: "营造清凉眠环境", desc: "将卧室温度调至18-22℃，开启身体深度睡眠开关。" },
-        m7: { title: "重新规划运动窗口", desc: "高强度训练应在睡前4小时前完成，给核心体温降温时间。" },
-        m8: { title: "动力午休限制", desc: "午睡控制在20分钟内，避免深睡后的认知迟钝。" },
-        m9: { title: "锚定起床时间", desc: "每天同一时间起床，这是对抗社交时差的最强手段。" },
-        m10: { title: "数字化日落", desc: "睡前1小时远离蓝光屏幕，建立大脑进入夜晚的仪式感。" },
-        m12: { title: "刺激控制逻辑", desc: "20分钟未入睡请果断离床，避免床与焦虑产生关联。" },
-        m11: { title: "微量元素协同", desc: "睡前补充镁与茶氨酸，辅助神经系统从兴奋转向深度放松。" }
+        m1: { title: "清晨光照补给", desc: "光照是生物钟最强的同步因子。起床后尽快接触自然光，能有效抑制褪黑素并开启一天的清醒节律。" },
+        m2: { title: "延迟咖啡因摄入", desc: "起床后皮质醇水平自然升高，此时摄入咖啡因会产生耐受。建议推迟至90分钟后，利用其阻断腺苷的特性维持长效专注。" },
+        m3: { title: "下午咖啡禁令", desc: "咖啡因半衰期约6小时。下午2点后避免摄入，可确保入睡时大脑腺苷受体不再被占据。" },
+        m4: { title: "日落光谱信号", desc: "傍晚接触低角度的暖色阳光能向大脑发送黑夜即将来临的信号，自然诱发睡意。" },
+        m6: { title: "优化物理眠温", desc: "核心体温下降是深度睡眠的诱导剂。将卧室控制在18-22℃，能显著缩短入睡潜伏期。" },
+        m7: { title: "调整运动窗口", desc: "高强度训练会提升体温并兴奋神经。请确保在睡前4小时完成，给身体降温和放松的时间。" },
+        m8: { title: "科学动力午休", desc: "午睡若超过20分钟会进入深睡，醒后产生“睡眠惯性”导致昏沉。严格控制在15-20分钟效果最佳。" },
+        m9: { title: "保持起床锚点", desc: "无论入睡多晚，坚持同一时间起床。这是训练大脑规律性、解决入睡困难的核心基石。" },
+        m10: { title: "数字化宵禁", desc: "屏幕蓝光会直接阻断褪黑素分泌。睡前1小时切换为非电子设备活动，为大脑构建入眠缓冲区。" },
+        m12: { title: "刺激控制疗法", desc: "不在床上进行除睡眠外的活动。若20分钟无法入睡请果断离床，避免床与清醒产生神经连接。" },
+        m11: { title: "神经舒缓策略", desc: "补充镁或进行肌肉渐进式放松，能辅助降低交感神经兴奋度，平滑切入睡眠状态。" }
     };
 
     let userAnswers = {};
@@ -153,11 +143,11 @@
         div.id = `page-${q.id}`;
         div.className = 'page';
         div.innerHTML = `
-            <button class="back-btn" onclick="prevPage()">← BACK</button>
-            <div class="q-number">STEP ${idx + 1} / 18</div>
+            <button class="back-btn" onclick="prevPage()">← 返回</button>
+            <div class="q-number">第 ${idx + 1} 步 / 共 18 步</div>
             <div class="q-title">${q.title}</div>
             <div class="options-grid">${q.options.map(opt => `<div class="option-item" onclick="handleSelect('${q.id}', '${opt[0]}', ${q.type==='checkbox'})">${opt[1]}</div>`).join('')}</div>
-            ${q.type === 'checkbox' ? `<button class="btn-tiffany" onclick="nextPage('${qData[idx+1]?.id || 'end'}')">继续下一步</button>` : ''}
+            ${q.type === 'checkbox' ? `<button class="btn-google" onclick="nextPage('${qData[idx+1]?.id || 'end'}')">继续</button>` : ''}
         `;
         container.appendChild(div);
     });
@@ -165,13 +155,12 @@
     function handleSelect(qid, val, isMulti) {
         if (!isMulti) {
             userAnswers[qid] = val;
-            const event = window.event;
-            event.currentTarget.parentElement.querySelectorAll('.option-item').forEach(i => i.classList.remove('selected'));
-            event.currentTarget.classList.add('selected');
+            window.event.currentTarget.parentElement.querySelectorAll('.option-item').forEach(i => i.classList.remove('selected'));
+            window.event.currentTarget.classList.add('selected');
             setTimeout(() => {
                 const idx = qData.findIndex(q => q.id === qid);
                 nextPage(qData[idx+1] ? qData[idx+1].id : 'end');
-            }, 250);
+            }, 200);
         } else {
             if (!userAnswers[qid]) userAnswers[qid] = [];
             const pos = userAnswers[qid].indexOf(val);
@@ -203,11 +192,8 @@
 
     let finalKeys = [];
     function showResults() {
-        if (userAnswers.q3 === 'A' || userAnswers.q5 === 'D' || (userAnswers.q6 && userAnswers.q6.some(v => v !== 'E'))) {
-            document.getElementById('result-container').innerHTML = `<div class="page active"><div class="q-title">由于复杂环境因素，建议您咨询医师。</div><button class="btn-tiffany" onclick="location.reload()">RETRY</button></div>`;
-            document.getElementById('page-loading').classList.remove('active');
-            return;
-        }
+        document.getElementById('page-loading').classList.remove('active');
+        // 筛选逻辑...
         let k = [];
         if (['B','C'].includes(userAnswers.q10)) k.push('m9');
         if (['B','C','D'].includes(userAnswers.q11)) k.push('m1');
@@ -216,27 +202,22 @@
         if (userAnswers.q15 === 'C') k.push('m4');
         if (userAnswers.q8 === 'A' || userAnswers.q8 === 'D') k.push('m10');
         if (['B','C','D'].includes(userAnswers.q9)) k.push('m6');
-        if (userAnswers.q16 !== 'C' && ['B','C','D'].includes(userAnswers.q17)) k.push('m8');
         
         finalKeys = [...new Set(k)].slice(0, 5);
-        if (finalKeys.length < 3) finalKeys.push('m11', 'm9', 'm1');
-        finalKeys = finalKeys.slice(0, 5);
-        
+        if (finalKeys.length < 3) finalKeys.push('m11', 'm1', 'm12');
         renderMeasureStep(0);
     }
 
     function renderMeasureStep(idx) {
-        document.getElementById('page-loading').classList.remove('active');
         const resDiv = document.getElementById('result-container');
         const data = measures[finalKeys[idx]];
         resDiv.innerHTML = `
             <div class="page active">
-                <div class="q-number">EXCLUSIVE SOLUTION ${idx + 1} / ${finalKeys.length}</div>
-                <div class="q-title" style="color:var(--maillard)">${data.title}</div>
-                <div class="divider"></div>
-                <div class="measure-desc" style="font-size:18px; line-height:2">${data.desc}</div>
-                <button class="btn-tiffany" onclick="${idx < finalKeys.length - 1 ? `renderMeasureStep(${idx+1})` : 'renderSummary()'}">
-                    ${idx < finalKeys.length - 1 ? '继续查看' : '查看方案汇总'}
+                <div class="q-number">建议方案 ${idx + 1} / ${finalKeys.length}</div>
+                <div class="q-title" style="color:#1A73E8; font-weight:500;">${data.title}</div>
+                <p style="font-size:18px; line-height:1.6; color:var(--google-sub); max-width:600px; margin: 0 auto 40px;">${data.desc}</p>
+                <button class="btn-google" onclick="${idx < finalKeys.length - 1 ? `renderMeasureStep(${idx+1})` : 'renderSummary()'}">
+                    ${idx < finalKeys.length - 1 ? '下一步' : '查看汇总'}
                 </button>
             </div>
         `;
@@ -244,15 +225,13 @@
 
     function renderSummary() {
         const resDiv = document.getElementById('result-container');
-        const listItems = finalKeys.map(k => `<li>${measures[k].title}</li>`).join('');
+        const listItems = finalKeys.map(k => `<div class="summary-item">${measures[k].title}</div>`).join('');
         resDiv.innerHTML = `
-            <div class="page active" style="animation: fadeIn 1.5s ease;">
-                <div class="q-number" style="margin-bottom:80px">SUMMARY</div>
-                <div class="summary-title">您的睡眠重塑计划</div>
-                <ul class="summary-list">${listItems}</ul>
-                <div class="divider" style="margin-top:60px"></div>
-                <p style="font-size:12px; color:#AAA; letter-spacing:2px">DEEP SLEEP LAB · 愿您今夜好眠</p>
-                <button class="btn-tiffany" style="background:#EEE; color:#999; margin-top:40px" onclick="location.reload()">重新测评</button>
+            <div class="page active">
+                <h2 style="font-size: 32px; font-weight: 500; margin-bottom: 8px;">睡眠改善计划汇总</h2>
+                <div class="divider"></div>
+                <div class="summary-box">${listItems}</div>
+                <button class="btn-google" style="background:#F1F3F4; color:var(--google-sub);" onclick="location.reload()">重新测评</button>
             </div>
         `;
     }
