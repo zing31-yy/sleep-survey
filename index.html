@@ -111,7 +111,7 @@
         { id: 'q9', type: 'radio', title: '您的卧室夜间温度通常是多少？', options: [['A','18-22℃'],['B','23-26℃'],['C','18℃以下或27℃以上'],['D','不确定/没关注过']] },
         { id: 'q10', type: 'radio', title: '您的起床时间是否固定？', options: [['A','每天固定时间'],['B','周末晚起1-2小时'],['C','时间不规律']] },
         { id: 'q11', type: 'radio', title: '起床多久后接触自然光照？', options: [['A','30分钟内'],['B','30-60分钟'],['C','超过60分钟'],['D','没留意']] },
-        { id: 'q12', type: 'radio', title: '起床后多久喝第一杯含咖啡因饮品？', options: [['A','30分钟内'],['B','30-90分钟'],['C','超过90分钟'],['D','偶尔喝/不喝']] },
+        { id: 'q12', type: 'radio', title: '起床后多久喝第一杯含咖啡因饮品？', options: [['A','30分钟内'],['B','30-60分钟'],['C','超过60分钟'],['D','偶尔喝/不喝']] },
         { id: 'q13', type: 'radio', title: '您通常进行剧烈运动的时间？', desc: '剧烈运动定义：通常心率达到120-140次/分钟以上，且伴随呼吸显著加快、无法顺畅说话的体感（如快跑、动感单车等）', options: [['A','早晨 6-9 点'],['B','下午 4-7 点'],['C','睡前 3 小时内'],['D','其他时间'],['E','几乎不进行剧烈运动']] },
         { id: 'q14', type: 'radio', title: '您每天最后喝含咖啡因饮品的时间是？', options: [['A','下午2点前'],['B','下午2-6点'],['C','下午6点后'],['D','偶尔喝/不喝']] },
         { id: 'q15', type: 'radio', title: '每周有多少天在傍晚接触自然光？', options: [['A','每周5-7天'],['B','每周3-4天'],['C','几乎没有']] },
@@ -121,17 +121,18 @@
     ];
 
     const measures = {
-        m1: { title: "清晨光照补给", desc: "建议起床后30-60分钟内接触自然光。这能精准重置生物钟，让大脑明白：‘新的一天开始了。’" },
-        m2: { title: "延迟咖啡因摄入", desc: "试着将首杯咖啡推迟至起后90分钟。待体内腺苷自然代谢后再介入，能更持久地维持清醒。" },
-        m3: { title: "午后咖啡禁令", desc: "计划入睡前8-10小时停止摄入咖啡因。守护睡眠的深度，从下午的这一杯克制开始。" },
-        m4: { title: "日落光影仪式", desc: "傍晚去户外走走，接触红光光谱。这在无声地催化褪黑素，为您准备今晚的入睡阶梯。" },
-        m6: { title: "营造清凉眠环境", desc: "核心体温下降是深度睡眠的‘物理开关’。试着将卧室保持在18-22℃，让身体感到安全而舒适。" },
-        m7: { title: "调整运动节奏", desc: "高强度训练建议在睡前4小时以上完成。给身体留出降温和静下来的时间，不与睡眠争抢节奏。" },
-        m8: { title: "动力午休原则", desc: "午睡若需，请控制在20分钟内。这种‘微关机’能提神，却不至于干扰晚上的主睡眠。" },
-        m9: { title: "坚持起床锚点", desc: "无论昨晚几点入睡，请在同一时间起床。这是对抗失眠和身体紊乱最坚实的根基。" },
-        m10: { title: "数字化宵禁", desc: "睡前1小时远离蓝光屏幕。换成一段悠长呼吸或几页纸质书，给大脑一个入眠的缓冲区。" },
-        m11: { title: "睡眠补充剂组合（可选）", desc: "镁（200mg）+ 茶氨酸（200mg）。在基础作息已经做好的前提下，这套组合可以作为最后的‘助推器’，帮您达到90-95分的睡眠深度。" },
-        m12: { title: "床的刺激控制", desc: "如果20-25分钟内毫无睡意，请果断离床放松。别让‘床’与‘焦虑’在潜意识里打结，等困了再回来。" }
+        m1: { title: "措施 1：起床后 30-60 分钟内晒太阳", desc: "建议起床后30-60分钟内接触自然光。这能精准重置生物钟，让大脑明白：‘新的一天开始了。’" },
+        m2: { title: "措施 2：延迟 90-120 分钟再喝咖啡", desc: "试着将首杯咖啡推迟至起后90-120分钟。待体内腺苷自然代谢后再介入，能更持久地维持清醒。" },
+        m3: { title: "措施 3：睡前 8-10 小时避免咖啡因", desc: "计划入睡前8-10小时停止摄入咖啡因。守护睡眠的深度，从下午的这一杯克制开始。" },
+        m4: { title: "措施 4：下午日落前接触自然光", desc: "傍晚去户外走走，接触红光光谱。这在无声地催化褪黑素，为您准备今晚的入睡阶梯。" },
+        m5: { title: "措施 5：晚上 10 点至凌晨 4 点避免强光", desc: "强光会抑制褪黑素分泌。睡前应调低室内亮度，使用低位暖色光源，为大脑营造入眠氛围。" },
+        m6: { title: "措施 6：保持卧室 18-22℃", desc: "核心体温下降是深度睡眠的‘物理开关’。试着将卧室保持在18-22℃，让身体感到安全而舒适。" },
+        m7: { title: "措施 7：睡前 3 小时避免剧烈运动", desc: "建议早晨 6-9 点或下午 4-7 点运动。给身体留出降温和静下来的时间，不与睡眠争抢节奏。" },
+        m8: { title: "措施 8：午睡控制在 20 分钟内", desc: "午睡若需，请控制在20分钟内。这种‘微关机’能提神，却不至于干扰晚上的主睡眠。" },
+        m9: { title: "措施 9：固定起床时间", desc: "无论昨晚几点入睡，请在同一时间起床。这是对抗失眠和身体紊乱最坚实的根基。" },
+        m10: { title: "措施 10：睡前 1 小时远离电子屏幕", desc: "睡前1小时远离蓝光屏幕。换成一段悠长呼吸或几页纸质书，给大脑一个入眠的缓冲区。" },
+        m11: { title: "措施 11：睡眠补充剂组合（可选）", desc: "镁（200mg）+ 茶氨酸（200mg）。在基础作息已经做好的前提下，这套组合可以作为最后的‘助推器’，帮您达到90-95分的睡眠深度。" },
+        m12: { title: "措施 12：20-25 分钟未入睡则起床放松", desc: "如果20-25分钟内毫无睡意，请果断离床放松。别让‘床’与‘焦虑’在潜意识里打结，等困了再回来。" }
     };
 
     let userAnswers = {};
@@ -222,32 +223,59 @@
         document.getElementById('page-loading').classList.remove('active');
         let k = [];
 
-        // --- 核心修正逻辑 1：第11题只有不选"30-60分钟"(B)才显示建议 ---
-        if (userAnswers.q11 !== 'B') k.push('m1');
+        // --- 重新编写映射逻辑 ---
 
-        const drinksCoffee = userAnswers.q7 && !userAnswers.q7.includes('D');
-        if (drinksCoffee) {
-            if (['A','B'].includes(userAnswers.q12)) k.push('m2');
-            if (['B','C'].includes(userAnswers.q14)) k.push('m3');
-        }
-        if (userAnswers.q15 === 'C') k.push('m4');
-        if (userAnswers.q8 === 'A' || userAnswers.q8 === 'D') k.push('m10');
-        if (['B','C','D'].includes(userAnswers.q9)) k.push('m6');
-        if (userAnswers.q13 === 'C') k.push('m7');
-        if (userAnswers.q16 !== 'C' && ['B','C','D'].includes(userAnswers.q17)) k.push('m8');
+        // Q10 选 B 或 C -> 措施 9
         if (['B','C'].includes(userAnswers.q10)) k.push('m9');
 
-        const totalIssues = [...new Set(k)];
+        // Q11 不选 B -> 措施 1
+        if (userAnswers.q11 !== 'B') k.push('m1');
+
+        // Q12 选 A 或 B -> 措施 2
+        if (['A','B'].includes(userAnswers.q12)) k.push('m2');
+
+        // Q13 选 C 或 D -> 措施 7
+        if (['C','D'].includes(userAnswers.q13)) k.push('m7');
+
+        // Q14 选 B 或 C -> 措施 3
+        if (['B','C'].includes(userAnswers.q14)) k.push('m3');
+
+        // Q15 选 B 或 C -> 措施 4
+        if (['B','C'].includes(userAnswers.q15)) k.push('m4');
+
+        // Q16 选 A 或 B，且 Q17 不选 A -> 措施 8
+        const hasNap = ['A','B'].includes(userAnswers.q16);
+        if (hasNap && userAnswers.q17 !== 'A') k.push('m8');
+
+        // Q8 选 A -> 措施 10
+        if (userAnswers.q8 === 'A') k.push('m10');
+
+        // Q8 选 D -> 措施 5 + 10
+        if (userAnswers.q8 === 'D') {
+            k.push('m5');
+            k.push('m10');
+        }
+
+        // Q9 选 B、C 或 D -> 措施 6
+        if (['B','C','D'].includes(userAnswers.q9)) k.push('m6');
+
+        // Q18 选 A 或 C -> 措施 12
+        // 注意：Q18 是多选，判断是否包含 A 或 C
+        if (userAnswers.q18 && (userAnswers.q18.includes('A') || userAnswers.q18.includes('C'))) {
+            k.push('m12');
+        }
+
+        const totalIssues = [...new Set(k)]; // 去重
         let finalDisplayKeys = [];
         let feedbackHeader = "";
 
         if (totalIssues.length === 0) {
-            // --- 核心修正逻辑 3：作息没问题推荐 m11 (补充剂) ---
+            // 以上都不涉及 -> 措施 11
             finalDisplayKeys = ['m11'];
-            feedbackHeader = `<div class="warm-notice" style="background:#E7F4EE; border-color:#A2CFB6; color:#1E4620;"><strong>卓越的生活自律者</strong> 🌿<br><br>测评显示，您已经建立了一套极其科学且符合昼夜节律的生活方式。这种对生理钟的尊重，是维持高水平身心健康的最强护城河。请继续保持这份觉察。<br>下方为您提供一份“高阶进阶方案”，作为最后的助推。</div>`;
+            feedbackHeader = `<div class="warm-notice" style="background:#E7F4EE; border-color:#A2CFB6; color:#1E4620;"><strong>卓越的生活自律者</strong> 🌿<br><br>测评显示，您已经建立了一套极其科学且符合昼夜节律的生活方式。这种对生理钟的尊重，是维持高水平认知和身心健康的最强护城河。请继续保持这份觉察。<br>下方为您提供一份“高阶进阶方案”，作为最后的助推。</div>`;
         } else if (totalIssues.length > 5) {
             finalDisplayKeys = totalIssues.slice(0, 5);
-            feedbackHeader = `<div class="warm-notice" style="background:#FEE7E7; border-color:#F4BABA; color:#721C24;"><strong>特别警示：您的作息基石急需修复</strong> ⚠️<br><br>结果显示，您目前有多项生活习惯正在严重干扰睡眠。<strong>您的实际问题远不止下方列出的5项</strong>，但为了避免认知过载，请先从这5个环节开始强制干预。</div>`;
+            feedbackHeader = `<div class="warm-notice" style="background:#FEE7E7; border-color:#F4BABA; color:#721C24;"><strong>特别警示：您的作息基石急需修复</strong> ⚠️<br><br>测评结果显示，您目前有多项生活习惯正在严重干扰您的睡眠系统。<strong>您的实际问题远不止下方列出的5项</strong>，但为了避免认知过载，我们建议您先从这5个核心环节开始强制干预。请务必予以高度重视。</div>`;
         } else {
             finalDisplayKeys = totalIssues;
         }
@@ -258,20 +286,16 @@
     function renderMeasureStep(idx, finalKeys, header) {
         const resDiv = document.getElementById('result-container');
         const data = measures[finalKeys[idx]];
-        
         let overtimeMsg = "";
         if (idx === 0 && (userAnswers.q5 === 'C' || userAnswers.q5 === 'D')) {
             const label = userAnswers.q5 === 'C' ? "经常加班" : "长期高强度加班";
-            overtimeMsg = `<div class="warm-notice">我们注意到您处于<strong>${label}</strong>状态...即便环境受限，改变依然有意义。</div>`;
+            overtimeMsg = `<div class="warm-notice">我们注意到您目前正处于<strong>${label}</strong>的状态中...虽然外界环境可能暂时不在掌控之中，但即便在狭缝中，尝试做到这些微小改变，依然会为您带来实质性的暖意。</div>`;
         }
 
-        // --- 核心修正逻辑 2：彻底重构单方案跳转逻辑 ---
-        const isTheLastOne = (idx === finalKeys.length - 1);
-        
-        // 生成按钮
-        const btnHtml = isTheLastOne 
-            ? `<button class="btn-main" onclick='renderSummary(${JSON.stringify(finalKeys)})'>查看方案汇总</button>`
-            : `<button class="btn-main" onclick='renderMeasureStep(${idx + 1}, ${JSON.stringify(finalKeys)}, "${header.replace(/"/g, '&quot;')}")'>继续查看</button>`;
+        const isLast = (idx === finalKeys.length - 1);
+        const buttonAction = isLast 
+            ? `renderSummary(${JSON.stringify(finalKeys)})` 
+            : `renderMeasureStep(${idx + 1}, ${JSON.stringify(finalKeys)}, "${header.replace(/"/g, '&quot;')}")`;
 
         resDiv.innerHTML = `
             <div class="page active">
@@ -280,7 +304,9 @@
                 <div class="q-number" style="color:var(--g-blue)">建议方案 ${idx + 1} / ${finalKeys.length}</div>
                 <div class="q-title" style="font-weight:500;">${data.title}</div>
                 <p style="font-size:18px; line-height:1.8; color:var(--g-sub); max-width:600px; margin: 0 auto 40px;">${data.desc}</p>
-                ${btnHtml}
+                <button class="btn-main" onclick='${buttonAction}'>
+                    ${isLast ? '查看方案汇总' : '继续查看'}
+                </button>
             </div>
         `;
     }
