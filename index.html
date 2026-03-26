@@ -21,14 +21,8 @@
         #app { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .container { width: 90%; max-width: 800px; padding: 40px; text-align: center; position: relative; }
 
-        /* Logo */
         .logo-box { margin-bottom: 30px; }
         .logo-svg { width: 60px; height: 60px; }
-
-        /* 首页 */
-        .home-title { font-size: 42px; font-weight: 500; letter-spacing: 2px; margin: 10px 0; }
-        .home-sub { color: var(--g-sub); font-size: 18px; margin-bottom: 40px; letter-spacing: 4px; }
-        .feature-tags { font-size: 14px; font-weight: 500; color: #9aa0a6; letter-spacing: 2px; margin-bottom: 50px; }
 
         /* 进度条 */
         .progress-bar {
@@ -42,9 +36,8 @@
 
         .q-number { font-size: 13px; font-weight: 500; color: var(--g-sub); margin-bottom: 10px; text-transform: uppercase; }
         .q-title { font-size: 26px; font-weight: 400; margin-bottom: 40px; line-height: 1.5; }
-        .q-desc { font-size: 14px; color: var(--g-sub); margin-top: -30px; margin-bottom: 30px; }
+        .q-desc { font-size: 14px; color: var(--g-sub); margin-top: -30px; margin-bottom: 30px; line-height: 1.6; }
 
-        /* 选项 */
         .options-grid { display: flex; flex-direction: column; gap: 12px; max-width: 550px; margin: 0 auto; }
         .option-item {
             padding: 16px 24px; border: 1px solid #DADCE0; border-radius: 24px;
@@ -62,24 +55,13 @@
 
         .back-btn { position: absolute; top: -20px; left: 0; background: none; border: none; color: var(--g-sub); cursor: pointer; font-size: 14px; }
 
-        /* 加载动画 */
-        .spinner-box { margin-bottom: 30px; display: flex; justify-content: center; gap: 8px; }
-        .dot { width: 12px; height: 12px; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
-        .dot:nth-child(1) { background: var(--g-blue); animation-delay: -0.32s; }
-        .dot:nth-child(2) { background: var(--g-red); animation-delay: -0.16s; }
-        .dot:nth-child(3) { background: var(--g-yellow); }
-        .dot:nth-child(4) { background: var(--g-green); animation-delay: 0.16s; }
-        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+        /* 提示卡片：温馨、人性化 */
+        .warm-notice { 
+            background: #FDF7E7; border-radius: 16px; padding: 25px; margin-bottom: 35px; 
+            text-align: left; line-height: 1.8; font-size: 15px; 
+            border: 1px solid #F9EBC8; color: #5F4B32;
+        }
 
-        /* 警告卡片 */
-        .warning-box { background: #FFF8E1; border-radius: 12px; padding: 25px; margin-bottom: 30px; text-align: left; line-height: 1.6; font-size: 15px; border-left: 5px solid var(--g-yellow); color: #5D4037; }
-
-        /* 总结扉页 */
-        .summary-container { border-left: 1px solid #EBEBEB; padding: 40px 60px; text-align: left; margin: 0 auto; max-width: 600px; }
-        .summary-header { font-family: 'Noto Serif SC', serif; font-size: 32px; color: var(--g-gray); margin-bottom: 60px; }
-        .summary-list { list-style: none; padding: 0; }
-        .summary-list li { font-size: 18px; margin-bottom: 30px; letter-spacing: 1px; color: #3C4043; border-bottom: 1px solid #F1F3F4; padding-bottom: 15px; }
-        
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -97,17 +79,16 @@
         </div>
 
         <div id="page-home" class="page active">
-            <h1 class="home-title">DEEP SLEEP LAB</h1>
-            <p class="home-sub">找回失去的睡眠</p>
-            <div class="feature-tags">无需药物 ｜ 无痛干预 ｜ 21天重塑睡眠</div>
+            <h1 style="font-size: 42px; font-weight: 500; letter-spacing: 2px;">DEEP SLEEP LAB</h1>
+            <p style="color: var(--g-sub); font-size: 18px; letter-spacing: 4px;">找回失去的睡眠</p>
+            <div style="font-size: 14px; color: #9aa0a6; letter-spacing: 2px; margin: 40px 0;">无需药物 ｜ 无痛干预 ｜ 21天重塑睡眠</div>
             <button class="btn-main" onclick="nextPage('q1')" style="padding: 12px 40px; font-size: 16px;">开始免费测评</button>
         </div>
 
         <div id="question-container"></div>
         <div id="page-loading" class="page">
-            <div class="spinner-box"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
             <h2 style="font-weight: 400;">致 每一位渴望好眠的旅人</h2>
-            <p style="color:var(--g-sub)">正在为您量身定制睡眠改善方案...</p>
+            <p style="color:var(--g-sub)">正在为您整理属于您的睡眠拼图...</p>
         </div>
         <div id="result-container"></div>
     </div>
@@ -127,7 +108,7 @@
         { id: 'q10', type: 'radio', title: '您的起床时间是否固定？', options: [['A','每天固定时间'],['B','周末晚起1-2小时'],['C','时间不规律']] },
         { id: 'q11', type: 'radio', title: '起床多久后接触自然光照？', options: [['A','30分钟内'],['B','30-90分钟'],['C','超过90分钟'],['D','没留意']] },
         { id: 'q12', type: 'radio', title: '起床后多久喝第一杯含咖啡因饮品？', options: [['A','30分钟内'],['B','30-90分钟'],['C','超过90分钟'],['D','偶尔喝/不喝']] },
-        { id: 'q13', type: 'radio', title: '您通常进行剧烈运动的时间？', desc: '剧烈运动定义：心率达到140次/分钟以上，如快跑、动感单车等', options: [['A','早晨 6-9 点'],['B','下午 4-7 点'],['C','睡前 3 小时内'],['D','其他时间'],['E','几乎不进行剧烈运动']] },
+        { id: 'q13', type: 'radio', title: '您通常进行剧烈运动的时间？', desc: '剧烈运动定义：通常心率达到120-140次/分钟以上，且伴随呼吸显著加快、无法顺畅说话的体感（如快跑、动感单车等）', options: [['A','早晨 6-9 点'],['B','下午 4-7 点'],['C','睡前 3 小时内'],['D','其他时间'],['E','几乎不进行剧烈运动']] },
         { id: 'q14', type: 'radio', title: '您每天最后喝含咖啡因饮品的时间是？', options: [['A','下午2点前'],['B','下午2-6点'],['C','下午6点后'],['D','偶尔喝/不喝']] },
         { id: 'q15', type: 'radio', title: '每周有多少天在傍晚接触自然光？', options: [['A','每周5-7天'],['B','每周3-4天'],['C','几乎没有']] },
         { id: 'q16', type: 'radio', title: '您有午睡习惯吗？', options: [['A','有固定习惯'],['B','偶尔午睡'],['C','几乎不午睡']] },
@@ -136,16 +117,16 @@
     ];
 
     const measures = {
-        m1: { title: "清晨光照补给", desc: "建议起床后30-60分钟内接触自然光，精准重置大脑生物钟起点。" },
-        m2: { title: "延迟咖啡因摄入", desc: "将首杯咖啡推迟至起后90分钟，待腺苷自然代谢，避免午后精力崩盘。" },
-        m3: { title: "午后咖啡禁令", desc: "入睡前8-10小时停止摄入咖啡因，确保受体不被干扰。" },
-        m4: { title: "日落光影重塑", desc: "傍晚接触红光光谱，诱发自然褪黑素分泌。" },
-        m6: { title: "营造清凉眠环境", desc: "将卧室温度调至18-22℃，开启身体深度睡眠开关。" },
-        m7: { title: "重新规划运动窗口", desc: "高强度训练应在睡前4小时前完成，给核心体温降温时间。" },
-        m8: { title: "动力午休限制", desc: "午睡控制在20分钟内，避免深睡后的认知迟钝。" },
-        m9: { title: "锚定起床时间", desc: "每天同一时间起床，这是对抗社交时差的最强手段。" },
-        m10: { title: "数字化日落", desc: "睡前1小时远离蓝光屏幕，建立大脑进入夜晚的仪式感。" },
-        m12: { title: "刺激控制逻辑", desc: "20分钟未入睡请果断离床，避免床与焦虑产生关联。" }
+        m1: { title: "清晨光照补给", desc: "建议起床后30-60分钟内接触自然光。这能精准重置生物钟，让大脑明白：‘新的一天开始了。’" },
+        m2: { title: "延迟咖啡因摄入", desc: "试着将首杯咖啡推迟至起后90分钟。待体内腺苷自然代谢后再介入，能更持久地维持清醒。" },
+        m3: { title: "午后咖啡禁令", desc: "计划入睡前8-10小时停止摄入咖啡因。守护睡眠的深度，从下午的这一杯克制开始。" },
+        m4: { title: "日落光影仪式", desc: "傍晚去户外走走，接触红光光谱。这在无声地催化褪黑素，为您准备今晚的入睡阶梯。" },
+        m6: { title: "营造清凉眠环境", desc: "核心体温下降是深度睡眠的‘物理开关’。试着将卧室保持在18-22℃，让身体感到安全而舒适。" },
+        m7: { title: "调整运动节奏", desc: "高强度训练建议在睡前4小时以上完成。给身体留出降温和静下来的时间，不与睡眠争抢节奏。" },
+        m8: { title: "动力午休原则", desc: "午睡若需，请控制在20分钟内。这种‘微关机’能提神，却不至于干扰晚上的主睡眠。" },
+        m9: { title: "坚持起床锚点", desc: "无论昨晚几点入睡，请在同一时间起床。这是对抗失眠和身体紊乱最坚实的根基。" },
+        m10: { title: "数字化宵禁", desc: "睡前1小时远离蓝光屏幕。换成一段悠长呼吸或几页纸质书，给大脑一个入眠的缓冲区。" },
+        m12: { title: "床的刺激控制", desc: "如果20分钟内毫无睡意，请果断离床。别让‘床’与‘焦虑’在潜意识里打结，等困了再回来。" }
     };
 
     let userAnswers = {};
@@ -189,7 +170,7 @@
         if (qid === 'q6') {
             const hasIssues = userAnswers.q6 && userAnswers.q6.some(v => v !== 'E');
             if (hasIssues) {
-                showMedicalAdvice();
+                showWarmAdvice();
                 return;
             }
         }
@@ -202,7 +183,7 @@
         if (id === 'end') {
             document.getElementById('p-bar').style.width = '100%';
             document.getElementById('page-loading').classList.add('active');
-            setTimeout(showResults, 4000);
+            setTimeout(showResults, 3000);
         } else {
             const idx = qData.findIndex(q => q.id === id);
             document.getElementById('p-bar').style.width = `${(idx / 18) * 100}%`;
@@ -220,14 +201,15 @@
         }
     }
 
-    function showMedicalAdvice() {
+    function showWarmAdvice() {
         document.getElementById('p-bar').style.width = '100%';
         const resDiv = document.getElementById('result-container');
         resDiv.innerHTML = `
             <div class="page active">
-                <div class="q-title" style="color:var(--g-red); margin-top:40px;">专业建议</div>
-                <div class="warning-box">
-                    疾病和服药对失眠的影响，在当下都远大于改变生活习惯的效果。为了您的健康，请咨询专业医疗人士。我们希望您在恢复身心健康后再进行测试，届时通过改变生活习惯来进一步提升睡眠质量。
+                <div class="q-title" style="margin-top:40px;">致 此时的您</div>
+                <div class="warm-notice">
+                    此时此刻，您的身体正在发出更优先的健康信号。在医学与药物的干预面前，单纯的生活习惯调整往往显得力量微弱。❤️<br><br>
+                    我们诚挚建议您先咨询专业的医疗或心理人士，给予身心充分的治愈时间。当您状态回稳、准备好通过习惯微调来精进睡眠时，我们会一直在这里等您。
                 </div>
                 <button class="btn-main" onclick="location.reload()">重新测评</button>
             </div>
@@ -256,8 +238,14 @@
         
         let overtimeMsg = "";
         if (idx === 0) {
-            if (userAnswers.q5 === 'C') overtimeMsg = `<div class="warning-box">经常加班可能会阻碍您通过改变生活习惯来改善睡眠质量。虽然加班节奏可能超出了您的掌控，但当您尝试做到本测评提供的生活习惯改变时，对您的睡眠提升一定是有帮助的。</div>`;
-            if (userAnswers.q5 === 'D') overtimeMsg = `<div class="warning-box">长期高强度加班会阻碍您通过改变生活习惯来改善睡眠质量。由于客观环境压力巨大，本测评对您的即时帮助可能有限，但坚持改善生活习惯是长效提升睡眠的基础。</div>`;
+            if (userAnswers.q5 === 'C' || userAnswers.q5 === 'D') {
+                const label = userAnswers.q5 === 'C' ? "经常加班" : "长期高强度加班";
+                overtimeMsg = `
+                <div class="warm-notice">
+                    我们注意到您目前正处于<strong>${label}</strong>的状态中。这种“身不由己”的快节奏，的确会让习惯的微调举步维艰。☕️<br><br>
+                    虽然外界环境可能暂时不在掌控之中，但即便在狭缝中，尝试做到测评中提到的微小改变，依然会为您的睡眠质量带来实质性的暖意。
+                </div>`;
+            }
         }
 
         resDiv.innerHTML = `
