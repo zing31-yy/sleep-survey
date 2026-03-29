@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEEP SLEEP LAB | 科学睡眠测评</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=Noto+Serif+SC:wght@700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --g-blue: #4285F4; --g-red: #EA4335; --g-yellow: #FBBC05; --g-green: #34A853;
+            --g-gray: #202124; --g-sub: #70757a; --bg-light: #FFFFFF;
+        }
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Google Sans', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-light); color: var(--g-gray);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        #app { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .container { width: 90%; max-width: 800px; padding: 40px; text-align: center; position: relative; }
+
+        .logo-box { margin-bottom: 30px; }
+        .logo-svg { width: 60px; height: 60px; }
+
+        .progress-bar {
+            position: absolute; top: 0; left: 0; width: 0%; height: 4px;
+            background: linear-gradient(to right, var(--g-blue), var(--g-red), var(--g-yellow), var(--g-green));
+            transition: width 0.4s ease;
+        }
+
+        .page { display: none; animation: fadeIn 0.5s ease; }
+        .page.active { display: block; }
+
+        .q-number { font-size: 13px; font-weight: 500; color: var(--g-sub); margin-bottom: 10px; text-transform: uppercase; }
+        .q-title { font-size: 26px; font-weight: 400; margin-bottom: 40px; line-height: 1.5; }
+        .q-desc { font-size: 14px; color: var(--g-sub); margin-top: -30px; margin-bottom: 30px; line-height: 1.6; }
+
+        .options-grid { display: flex; flex-direction: column; gap: 12px; max-width: 550px; margin: 0 auto; }
+        .option-item {
+            padding: 16px 24px; border: 1px solid #DADCE0; border-radius: 24px;
+            background: #FFF; cursor: pointer; transition: all 0.2s; font-size: 16px; text-align: left;
+        }
+        .option-item:hover { background-color: #F8F9FA; border-color: var(--g-blue); }
+        .option-item.selected { background-color: #E8F0FE; border-color: var(--g-blue); color: var(--g-blue); font-weight: 500; }
+
+        .btn-main {
+            background-color: #f8f9fa; color: #3c4043; border: 1px solid #f8f9fa;
+            padding: 10px 24px; cursor: pointer; font-size: 14px; font-weight: 500;
+            border-radius: 4px; transition: all 0.2s; margin-top: 30px;
+        }
+        .btn-main:hover { border: 1px solid #dadce0; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+
+        .back-btn { position: absolute; top: -20px; left: 0; background: none; border: none; color: var(--g-sub); cursor: pointer; font-size: 14px; }
+
+        .warm-notice { 
+            background: #FDF7E7; border-radius: 16px; padding: 25px; margin-bottom: 35px; 
+            text-align: left; line-height: 1.8; font-size: 15px; 
+            border: 1px solid #F9EBC8; color: #5F4B32;
+        }
+
+        .summary-container { border-left: 1px solid #EBEBEB; padding: 40px 60px; text-align: left; margin: 40px auto 0; max-width: 600px; }
+        .summary-header { font-family: 'Noto Serif SC', serif; font-size: 32px; color: var(--g-gray); margin-bottom: 60px; }
+        .summary-list { list-style: none; padding: 0; }
+        .summary-list li { font-size: 18px; margin-bottom: 30px; letter-spacing: 1px; color: #3C4043; border-bottom: 1px solid #F1F3F4; padding-bottom: 15px; }
+        .summary-footer { margin-top: 80px; font-size: 12px; color: #AAA; letter-spacing: 3px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div class="progress-bar" id="p-bar"></div>
+    <div class="container">
+        <div class="logo-box">
+            <svg class="logo-svg" viewBox="0 0 100 100">
+                <path d="M50 15 Q35 45 35 65 A15 15 0 0 0 65 65 Q65 45 50 15" fill="#4285F4" opacity="0.9"/>
+                <path d="M30 35 Q15 65 15 85 A15 15 0 0 0 45 85 Q45 65 30 35" fill="#34A853" opacity="0.8"/>
+                <path d="M70 35 Q55 65 55 85 A15 15 0 0 0 85 85 Q85 65 70 35" fill="#EA4335" opacity="0.8"/>
+            </svg>
+        </div>
+
+        <div id="page-home" class="page active">
+            <h1 style="font-size: 42px; font-weight: 500; letter-spacing: 2px; margin-bottom: 10px;">DEEP SLEEP LAB</h1>
+            <p style="color: var(--g-sub); font-size: 18px; letter-spacing: 4px; margin-bottom: 40px;">找回失去的睡眠</p>
+            <div style="font-size: 14px; color: #9aa0a6; letter-spacing: 2px; margin-bottom: 50px;">无需药物 ｜ 无痛干预 ｜ 21天重塑睡眠</div>
+            <button class="btn-main" onclick="nextPage('q1')" style="padding: 12px 40px; font-size: 16px;">开始免费测评</button>
+        </div>
+
+        <div id="question-container"></div>
+        <div id="page-loading" class="page">
+            <h2 style="font-weight: 400;">致 每一位渴望好眠的旅人</h2>
+            <p style="color:var(--g-sub)">正在为您整理属于您的睡眠拼图...</p>
+        </div>
+        <div id="result-container"></div>
+    </div>
+</div>
+
+<script>
+    const qData = [
+        { id: 'q1', type: 'radio', title: '您的年龄是？', options: [['A','18岁以下'],['B','18-25岁'],['C','26-35岁'],['D','36-50岁'],['E','50岁以上']] },
+        { id: 'q2', type: 'radio', title: '您的性别？', options: [['A','男性'],['B','女性'],['C','其他/不愿透露']] },
+        { id: 'q3', type: 'radio', title: '您目前平均每晚睡眠时长是多少？', options: [['A','不足6小时'],['B','6-8小时（不含）'],['C','8小时及以上']] },
+        { id: 'q4', type: 'checkbox', title: '您目前最主要的睡眠问题是？（可多选）', options: [['A','入睡困难'],['B','睡眠浅、容易醒'],['C','早醒'],['D','晨起疲累'],['E','想进一步提升']] },
+        { id: 'q5', type: 'radio', title: '您平均每周加班情况是？', options: [['A','几乎不加班'],['B','偶尔加班'],['C','经常加班'],['D','长期高强度加班']] },
+        { id: 'q6', type: 'checkbox', title: '您是否有以下健康问题？（可多选）', options: [['A','慢性疼痛'],['B','呼吸问题'],['C','心理问题'],['D','正在服用可能影响睡眠的药物'],['E','以上都没有']] },
+        { id: 'q7', type: 'checkbox', title: '您是否有饮用含咖啡因饮品的习惯？（可多选）', options: [['A','咖啡'],['B','茶饮'],['C','可乐/奶茶/能量饮料'],['D','不喝/很少喝']] },
+        { id: 'q8', type: 'radio', title: '您的睡前1小时通常做什么？', options: [['A','玩手机/ipad等'],['B','纸质阅读/听音乐或播客'],['C','瑜伽或冥想等放松活动'],['D','工作或处理事务']] },
+        { id: 'q9', type: 'radio', title: '您的卧室夜间温度通常是多少？', options: [['A','18-22℃'],['B','23-26℃'],['C','18℃以下或27℃以上'],['D','不确定/没关注过']] },
+        { id: 'q10', type: 'radio', title: '您的起床时间是否固定？', options: [['A','每天固定时间'],['B','周末晚起1-2小时'],['C','时间不规律']] },
+        { id: 'q11', type: 'radio', title: '起床多久后接触自然光照？', options: [['A','30分钟内'],['B','30-60分钟'],['C','超过60分钟'],['D','没留意']] },
+        { id: 'q12', type: 'radio', title: '起床后多久喝第一杯含咖啡因饮品？', options: [['A','30分钟内'],['B','30-60分钟'],['C','超过60分钟'],['D','偶尔喝/不喝']] },
+        { id: 'q13', type: 'radio', title: '您通常进行剧烈运动的时间？', desc: '剧烈运动定义：通常心率达到120-140次/分钟以上，且伴随呼吸显著加快、无法顺畅说话的体感（如快跑、动感单车等）', options: [['A','早晨 6-9 点'],['B','下午 4-7 点'],['C','睡前 3 小时内'],['D','其他时间'],['E','几乎不进行剧烈运动']] },
+        { id: 'q14', type: 'radio', title: '您每天最后喝含咖啡因饮品的时间是？', options: [['A','下午2点前'],['B','下午2-6点'],['C','下午6点后'],['D','偶尔喝/不喝']] },
+        { id: 'q15', type: 'radio', title: '每周有多少天在傍晚接触自然光？', options: [['A','每周5-7天'],['B','每周3-4天'],['C','几乎没有']] },
+        { id: 'q16', type: 'radio', title: '您有午睡习惯吗？', options: [['A','有固定习惯'],['B','偶尔午睡'],['C','几乎不午睡']] },
+        { id: 'q17', type: 'radio', title: '通常您午睡的时长是多久？', options: [['A','20分钟以内'],['B','20-60分钟'],['C','超过60分钟'],['D','不确定'],['E','不午睡']] },
+        { id: 'q18', type: 'checkbox', title: '躺下30分钟还没入睡，您会？（可多选）', options: [['A','继续躺着尝试入睡'],['B','起床等困了再睡'],['C','在床上看书/玩手机']] }
+    ];
+
+    const measures = {
+        m1: { title: "清晨光照补给", desc: "建议起床后30-60分钟内接触自然光。这能精准重置生物钟，让大脑明白：‘新的一天开始了。’" },
+        m2: { title: "延迟咖啡因摄入", desc: "试着将首杯咖啡推迟至起后90-120分钟。待体内腺苷自然代谢后再介入，能更持久地维持清醒。" },
+        m3: { title: "午后咖啡禁令", desc: "计划入睡前8-10小时停止摄入咖啡因。守护睡眠的深度，从下午的这一杯克制开始。" },
+        m4: { title: "日落光影仪式", desc: "傍晚去户外走走，接触红光光谱。这在无声地催化褪黑素，为您准备今晚的入睡阶梯。" },
+        m5: { title: "避开深夜强光", desc: "强光会抑制褪黑素分泌。睡前应调低室内亮度，使用低位暖色光源，为大脑营造入眠氛围。" },
+        m6: { title: "营造清凉眠环境", desc: "核心体温下降是深度睡眠的‘物理开关’。试着将卧室保持在18-22℃，让身体感到安全而舒适。" },
+        m7: { title: "调整运动节奏", desc: "高强度训练建议在睡前4小时以上完成。建议早晨 6-9 点或下午 4-7 点运动，不与睡眠争抢节奏。" },
+        m8: { title: "动力午休原则", desc: "午睡若需，请控制在20分钟内。这种‘微关机’能提神，却不至于干扰晚上的主睡眠。" },
+        m9: { title: "坚持起床锚点", desc: "无论昨晚几点入睡，请在同一时间起床。这是对抗失眠和身体紊乱最坚实的根基。" },
+        m10: { title: "数字化宵禁", desc: "睡前1小时远离蓝光屏幕。换成一段悠长呼吸或几页纸质书，给大脑一个入眠的缓冲区。" },
+        m11: { title: "睡眠补充剂组合（可选）", desc: "镁（200mg）+ 茶氨酸（200mg）。在基础作息已经做好的前提下，这套组合可以作为最后的‘助推器’，帮您达到90-95分的睡眠深度。" },
+        m12: { title: "床的刺激控制", desc: "如果20-25分钟内毫无睡意，请果断离床放松。别让‘床’与‘焦虑’在潜意识里打结，等困了再回来。" }
+    };
+
+    let userAnswers = {};
+    let pageHistory = ['home'];
+
+    const container = document.getElementById('question-container');
+    qData.forEach((q, idx) => {
+        const div = document.createElement('div');
+        div.id = `page-${q.id}`;
+        div.className = 'page';
+        div.innerHTML = `
+            <button class="back-btn" onclick="prevPage()">← 返回</button>
+            <div class="q-number">Step ${idx + 1} / 18</div>
+            <div class="q-title">${q.title}</div>
+            ${q.desc ? `<div class="q-desc">${q.desc}</div>` : ''}
+            <div class="options-grid">${q.options.map(opt => `<div class="option-item" onclick="handleSelect('${q.id}', '${opt[0]}', ${q.type==='checkbox'})">${opt[1]}</div>`).join('')}</div>
+            ${q.type === 'checkbox' ? `<button class="btn-main" onclick="checkRedirect('${q.id}')">继续下一步</button>` : ''}
+        `;
+        container.appendChild(div);
+    });
+
+    function handleSelect(qid, val, isMulti) {
+        if (!isMulti) {
+            userAnswers[qid] = val;
+            window.event.currentTarget.parentElement.querySelectorAll('.option-item').forEach(i => i.classList.remove('selected'));
+            window.event.currentTarget.classList.add('selected');
+            setTimeout(() => {
+                const idx = qData.findIndex(q => q.id === qid);
+                nextPage(qData[idx+1] ? qData[idx+1].id : 'end');
+            }, 250);
+        } else {
+            if (!userAnswers[qid]) userAnswers[qid] = [];
+            const pos = userAnswers[qid].indexOf(val);
+            if (pos > -1) userAnswers[qid].splice(pos, 1);
+            else userAnswers[qid].push(val);
+            window.event.currentTarget.classList.toggle('selected');
+        }
+    }
+
+    function checkRedirect(qid) {
+        if (qid === 'q6') {
+            const hasIssues = userAnswers.q6 && userAnswers.q6.some(v => v !== 'E');
+            if (hasIssues) { showWarmAdvice(); return; }
+        }
+        const idx = qData.findIndex(q => q.id === qid);
+        nextPage(qData[idx+1] ? qData[idx+1].id : 'end');
+    }
+
+    function nextPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        if (id === 'end') {
+            document.getElementById('p-bar').style.width = '100%';
+            document.getElementById('page-loading').classList.add('active');
+            setTimeout(showResults, 3000);
+        } else {
+            const idx = qData.findIndex(q => q.id === id);
+            document.getElementById('p-bar').style.width = `${(idx / 18) * 100}%`;
+            document.getElementById(`page-${id}`).classList.add('active');
+            pageHistory.push(id);
+        }
+    }
+
+    function prevPage() {
+        if (pageHistory.length > 1) {
+            pageHistory.pop();
+            const prev = pageHistory[pageHistory.length-1];
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(prev === 'home' ? 'page-home' : `page-${prev}`).classList.add('active');
+        }
+    }
+
+    function showWarmAdvice() {
+        document.getElementById('p-bar').style.width = '100%';
+        const resDiv = document.getElementById('result-container');
+        resDiv.innerHTML = `
+            <div class="page active">
+                <div class="q-title" style="margin-top:40px;">致 此时的您</div>
+                <div class="warm-notice">
+                    此时此刻，您的身体正在发出更优先的健康信号。在医学与药物的干预面前，单纯的生活习惯调整往往显得力量微弱。❤️<br><br>
+                    我们诚挚建议您先咨询专业的医疗或心理人士，给予身心充分的治愈时间。当您状态回稳、准备好通过习惯微调来精进睡眠时，我们会一直在这里等您。
+                </div>
+                <button class="btn-main" onclick="location.reload()">重新测评</button>
+            </div>
+        `;
+    }
+
+    function showResults() {
+        document.getElementById('page-loading').classList.remove('active');
+        let k = [];
+
+        // 逻辑映射
+        if (['B','C'].includes(userAnswers.q10)) k.push('m9');
+        if (userAnswers.q11 !== 'B') k.push('m1');
+        if (['A','B'].includes(userAnswers.q12)) k.push('m2');
+        if (['C','D'].includes(userAnswers.q13)) k.push('m7');
+        if (['B','C'].includes(userAnswers.q14)) k.push('m3');
+        if (['B','C'].includes(userAnswers.q15)) k.push('m4');
+        if (['A','B'].includes(userAnswers.q16) && userAnswers.q17 !== 'A') k.push('m8');
+        if (userAnswers.q8 === 'A') k.push('m10');
+        if (userAnswers.q8 === 'D') { k.push('m5'); k.push('m10'); }
+        if (['B','C','D'].includes(userAnswers.q9)) k.push('m6');
+        if (userAnswers.q18 && (userAnswers.q18.includes('A') || userAnswers.q18.includes('C'))) k.push('m12');
+
+        const totalIssues = [...new Set(k)];
+        let finalDisplayKeys = [];
+        let feedbackHeader = "";
+
+        if (totalIssues.length === 0) {
+            finalDisplayKeys = ['m11'];
+            feedbackHeader = `<div class="warm-notice" style="background:#E7F4EE; border-color:#A2CFB6; color:#1E4620;"><strong>卓越的生活自律者</strong> 🌿<br><br>测评显示，您已经建立了一套极其科学且符合昼夜节律的生活方式。这种对生理钟的尊重，是维持高水平认知和身心健康的最强护城河。请继续保持这份觉察。<br>下方为您提供一份“高阶进阶方案”，作为最后的助推。</div>`;
+        } else if (totalIssues.length > 5) {
+            finalDisplayKeys = totalIssues.slice(0, 5);
+            feedbackHeader = `<div class="warm-notice" style="background:#FEE7E7; border-color:#F4BABA; color:#721C24;"><strong>特别警示：您的作息基石急需修复</strong> ⚠️<br><br>测评结果显示，您目前有多项生活习惯正在严重干扰您的睡眠系统。<strong>您的实际问题远不止下方列出的5项</strong>，但为了避免认知过载，我们建议您先从这5个核心环节开始强制干预。请务必予以高度重视。</div>`;
+        } else {
+            finalDisplayKeys = totalIssues;
+        }
+
+        renderMeasureStep(0, finalDisplayKeys, feedbackHeader);
+    }
+
+    function renderMeasureStep(idx, finalKeys, header) {
+        const resDiv = document.getElementById('result-container');
+        const data = measures[finalKeys[idx]];
+        let overtimeMsg = "";
+        if (idx === 0 && (userAnswers.q5 === 'C' || userAnswers.q5 === 'D')) {
+            const label = userAnswers.q5 === 'C' ? "经常加班" : "长期高强度加班";
+            overtimeMsg = `<div class="warm-notice">我们注意到您目前正处于<strong>${label}</strong>的状态中...虽然外界环境可能暂时不在掌控之中，但即便在狭缝中，尝试做到这些微小改变，依然会为您带来实质性的暖意。</div>`;
+        }
+
+        const isLast = (idx === finalKeys.length - 1);
+        
+        // --- 核心修正点：生成下一步按钮时，不再传递冗长且含有双引号的 header ---
+        const buttonAction = isLast 
+            ? `renderSummary(${JSON.stringify(finalKeys)})` 
+            : `renderMeasureStep(${idx + 1}, ${JSON.stringify(finalKeys)}, "")`;
+
+        resDiv.innerHTML = `
+            <div class="page active">
+                ${header && idx === 0 ? header : ""}
+                ${overtimeMsg}
+                <div class="q-number" style="color:var(--g-blue)">建议方案 ${idx + 1} / ${finalKeys.length}</div>
+                <div class="q-title" style="font-weight:500;">${data.title}</div>
+                <p style="font-size:18px; line-height:1.8; color:var(--g-sub); max-width:600px; margin: 0 auto 40px;">${data.desc}</p>
+                <button class="btn-main" onclick='${buttonAction}'>
+                    ${isLast ? '查看方案汇总' : '继续查看'}
+                </button>
+            </div>
+        `;
+    }
+
+    function renderSummary(finalKeys) {
+        const resDiv = document.getElementById('result-container');
+        const listItems = finalKeys.map(k => `<li>${measures[k].title}</li>`).join('');
+        resDiv.innerHTML = `
+            <div class="page active" style="animation: fadeIn 1.2s ease;">
+                <div class="summary-container">
+                    <div class="summary-header">您的睡眠重塑计划</div>
+                    <ul class="summary-list">${listItems}</ul>
+                    <div class="summary-footer">DEEP SLEEP LAB · 愿您今夜好眠</div>
+                </div>
+                <button class="btn-main" style="margin-top:60px" onclick="location.reload()">重新测评</button>
+            </div>
+        `;
+    }
+</script>
+</body>
+</html>
