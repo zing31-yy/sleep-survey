@@ -264,10 +264,10 @@
 
         const isLast = (idx === finalKeys.length - 1);
         
-        // --- 核心修正点：生成下一步按钮时，不再传递冗长且含有双引号的 header ---
+        // --- 核心修正点：用 .replace(/"/g, '&quot;') 完全隔绝引号，防止在任何环境中造成 JS 语法死锁 ---
         const buttonAction = isLast 
-            ? `renderSummary(${JSON.stringify(finalKeys)})` 
-            : `renderMeasureStep(${idx + 1}, ${JSON.stringify(finalKeys)}, "")`;
+            ? `renderSummary(${JSON.stringify(finalKeys).replace(/"/g, '&quot;')})` 
+            : `renderMeasureStep(${idx + 1}, ${JSON.stringify(finalKeys).replace(/"/g, '&quot;')}, "")`;
 
         resDiv.innerHTML = `
             <div class="page active">
