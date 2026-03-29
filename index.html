@@ -223,18 +223,18 @@
         document.getElementById('page-loading').classList.remove('active');
         let k = [];
 
-        // --- 核心逻辑映射 (锁定版本) ---
-        if (['B','C'].includes(userAnswers.q10)) k.push('m9'); // 固定起床
-        if (userAnswers.q11 !== 'B') k.push('m1');           // 晒太阳
-        if (['A','B'].includes(userAnswers.q12)) k.push('m2'); // 延迟咖啡
-        if (['C','D'].includes(userAnswers.q13)) k.push('m7'); // 运动节奏
-        if (['B','C'].includes(userAnswers.q14)) k.push('m3'); // 下午禁咖啡
-        if (['B','C'].includes(userAnswers.q15)) k.push('m4'); // 日落光照
-        if (['A','B'].includes(userAnswers.q16) && userAnswers.q17 !== 'A') k.push('m8'); // 午睡
-        if (userAnswers.q8 === 'A') k.push('m10');             // 远离屏幕
-        if (userAnswers.q8 === 'D') { k.push('m5'); k.push('m10'); } // 工作映射5+10
-        if (['B','C','D'].includes(userAnswers.q9)) k.push('m6');  // 温度
-        if (userAnswers.q18 && (userAnswers.q18.includes('A') || userAnswers.q18.includes('C'))) k.push('m12'); // 离床
+        // 逻辑映射
+        if (['B','C'].includes(userAnswers.q10)) k.push('m9');
+        if (userAnswers.q11 !== 'B') k.push('m1');
+        if (['A','B'].includes(userAnswers.q12)) k.push('m2');
+        if (['C','D'].includes(userAnswers.q13)) k.push('m7');
+        if (['B','C'].includes(userAnswers.q14)) k.push('m3');
+        if (['B','C'].includes(userAnswers.q15)) k.push('m4');
+        if (['A','B'].includes(userAnswers.q16) && userAnswers.q17 !== 'A') k.push('m8');
+        if (userAnswers.q8 === 'A') k.push('m10');
+        if (userAnswers.q8 === 'D') { k.push('m5'); k.push('m10'); }
+        if (['B','C','D'].includes(userAnswers.q9)) k.push('m6');
+        if (userAnswers.q18 && (userAnswers.q18.includes('A') || userAnswers.q18.includes('C'))) k.push('m12');
 
         const totalIssues = [...new Set(k)];
         let finalDisplayKeys = [];
@@ -263,9 +263,11 @@
         }
 
         const isLast = (idx === finalKeys.length - 1);
+        
+        // --- 核心修正点：用 .replace(/"/g, '&quot;') 完全隔绝引号，防止在任何环境中造成 JS 语法死锁 ---
         const buttonAction = isLast 
-            ? `renderSummary(${JSON.stringify(finalKeys)})` 
-            : `renderMeasureStep(${idx + 1}, ${JSON.stringify(finalKeys)}, "${header.replace(/"/g, '&quot;')}")`;
+            ? `renderSummary(${JSON.stringify(finalKeys).replace(/"/g, '&quot;')})` 
+            : `renderMeasureStep(${idx + 1}, ${JSON.stringify(finalKeys).replace(/"/g, '&quot;')}, "")`;
 
         resDiv.innerHTML = `
             <div class="page active">
